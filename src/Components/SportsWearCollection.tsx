@@ -1,3 +1,5 @@
+"use client"
+
 import { Box, Button, Container, Typography } from "@mui/material";
 import sportsWearCollectionImg from "../../public/sports-wear-collection.png";
 import Image from "next/image";

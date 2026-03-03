@@ -1,3 +1,5 @@
+"use client"
+
 import { Box, Button, Container, Fade, Slide, Typography } from "@mui/material";
 import Image from "next/image";
 

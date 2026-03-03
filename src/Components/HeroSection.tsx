@@ -1,3 +1,5 @@
+"use client"
+
 import { Box, Typography, Button, Container } from "@mui/material";
 
 const HeroSection = () => {

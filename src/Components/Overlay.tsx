@@ -1,3 +1,5 @@
+"use client"
+
 import { Box } from "@mui/material";
 import { useRender } from "../Context/visibility/RenderContext";
 
