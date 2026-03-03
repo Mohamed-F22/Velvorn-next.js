@@ -5,8 +5,8 @@ import RenderProvider from "@/Context/visibility/RenderProvider";
 import Navbar from "@/Components/Navbar";
 import Cart from "@/Components/Cart";
 import AuthModals from "@/Context/visibility/AuthModals";
-import { Box } from "@mui/material";
 import AOSInit from "./AOS";
+import "aos/dist/aos.css";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
