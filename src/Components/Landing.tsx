@@ -1,8 +1,19 @@
 "use client"
 import { Box, Button, Container, Fade, Slide, Typography } from "@mui/material";
 import Image from "next/image";
+import { useEffect } from "react";
+import { useState } from "react";
 
 const Landing = () => {
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);  
+  }, []);
+
+  if (!isMounted) {
+    return null;  
+  }
   return (
     <Box
       className="landing"
@@ -48,6 +59,7 @@ const Landing = () => {
                   left: "50%",
                   transform: "translateX(-50%)",
                 }}
+                priority
               />
             </Fade>
           </Box>

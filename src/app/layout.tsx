@@ -7,6 +7,7 @@ import Cart from "@/Components/Cart";
 import AuthModals from "@/Context/visibility/AuthModals";
 import AOSInit from "./AOS";
 import "aos/dist/aos.css";
+import { AppRouterCacheProvider } from '@mui/material-nextjs/v14-appRouter';
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -31,13 +32,15 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <AOSInit />
-        <RenderProvider>
-          <AuthModals />
-          <Cart />
-          <Navbar />
-          {children}
-        </RenderProvider>
+        <AppRouterCacheProvider>
+          <AOSInit />
+          <RenderProvider>
+            <AuthModals />
+            <Cart />
+            <Navbar />
+            {children}
+          </RenderProvider>
+        </AppRouterCacheProvider>
       </body>
     </html>
   );
