@@ -70,36 +70,40 @@ const Landing = () => {
               justifyContent: "space-between",
             }}
           >
-            <Slide direction="right" in={true} timeout={500}>
-              <Typography
-                variant="h1"
-                sx={{
-                  fontWeight: "700",
-                  fontSize: { xs: "3.7rem", sm: "5rem", md: "10rem" },
-                  letterSpacing: "0.2em",
-                  lineHeight: 1,
-                  mb: 4,
-                  color: "#222",
-                }}
-              >
-                VELV
-              </Typography>
-            </Slide>
-            <Slide direction="left" in={true} timeout={800}>
-              <Typography
-                variant="h1"
-                sx={{
-                  fontWeight: "700",
-                  fontSize: { xs: "3.7rem", sm: "5rem", md: "10rem" },
-                  letterSpacing: "0.2em",
-                  lineHeight: 1,
-                  mb: 4,
-                  color: "#222",
-                }}
-              >
-                ORN
-              </Typography>
-            </Slide>
+            <Fade in={true} timeout={500}>
+              <Slide direction="right" in={true} timeout={500}>
+                <Typography
+                  variant="h1"
+                  sx={{
+                    fontWeight: "700",
+                    fontSize: { xs: "3.7rem", sm: "5rem", md: "10rem" },
+                    letterSpacing: "0.2em",
+                    lineHeight: 1,
+                    mb: 4,
+                    color: "#222",
+                  }}
+                >
+                  VELV
+                </Typography>
+              </Slide>
+            </Fade>
+            <Fade in={true} timeout={800}>
+              <Slide direction="left" in={true} timeout={800}>
+                <Typography
+                  variant="h1"
+                  sx={{
+                    fontWeight: "700",
+                    fontSize: { xs: "3.7rem", sm: "5rem", md: "10rem" },
+                    letterSpacing: "0.2em",
+                    lineHeight: 1,
+                    mb: 4,
+                    color: "#222",
+                  }}
+                >
+                  ORN
+                </Typography>
+              </Slide>
+            </Fade>
           </Box>
           <Fade in={true} timeout={1000}>
             <Box>
