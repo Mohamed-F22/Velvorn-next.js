@@ -1,4 +1,4 @@
-"use client";
+"use client"
 import {
   Box,
   Button,
@@ -8,12 +8,13 @@ import {
   IconButton,
   Typography,
 } from "@mui/material";
-import { offerProducts } from "../Zustand/zustand";
 import CardGiftcardIcon from "@mui/icons-material/CardGiftcard";
-import { useCartStore } from "../Zustand/zustand";
 import Image from "next/image";
+import { useCartStore } from "@/Zustand/CartState";
+import { Product } from "@/lib/getProducts";
+import { useEffect, useState } from "react";
 
-const OffersSection = () => {
+const OffersSection =  ({offerProducts} : {offerProducts: Product[] }) => {
   const { addItemToCart } = useCartStore();
 
   const handleCartButton = (id: string) => {
@@ -28,10 +29,10 @@ const OffersSection = () => {
     }
   };
 
-  const chooseSize = (id: string, size: string) => {
-    addItemToCart(id, size);
+  const chooseSize = (_id: string, size: string) => {
+    addItemToCart(_id, size);
     document
-      .getElementById(`offer-${id}-size`)
+      .getElementById(`offer-${_id}-size`)
       ?.classList.remove("active-size");
   };
 
@@ -95,7 +96,7 @@ const OffersSection = () => {
           {offerProducts.map((product, index) => (
             <Grid
               size={{ xs: 12, sm: 6, md: 4 }}
-              key={product.id}
+              key={product._id}
               data-aos="fade-up"
               data-aos-duration="1000"
               data-aos-offset="300"
@@ -129,12 +130,12 @@ const OffersSection = () => {
                   >
                     <ButtonGroup
                       className="choose-size"
-                      id={`offer-${product.id}-size`}
+                      id={`offer-${product._id}-size`}
                       variant="contained"
                     >
                       {" "}
                       <Button
-                        onClick={() => chooseSize(product.id, "xs")}
+                        onClick={() => chooseSize(product._id, "xs")}
                         sx={{
                           backgroundColor: "#222",
                           color: "#fff",
@@ -146,7 +147,7 @@ const OffersSection = () => {
                         xs
                       </Button>
                       <Button
-                        onClick={() => chooseSize(product.id, "sm")}
+                        onClick={() => chooseSize(product._id, "sm")}
                         sx={{
                           backgroundColor: "#222",
                           color: "#fff",
@@ -157,7 +158,7 @@ const OffersSection = () => {
                         sm
                       </Button>
                       <Button
-                        onClick={() => chooseSize(product.id, "m")}
+                        onClick={() => chooseSize(product._id, "m")}
                         sx={{
                           backgroundColor: "#222",
                           color: "#fff",
@@ -168,7 +169,7 @@ const OffersSection = () => {
                         m
                       </Button>
                       <Button
-                        onClick={() => chooseSize(product.id, "lg")}
+                        onClick={() => chooseSize(product._id, "lg")}
                         sx={{
                           backgroundColor: "#222",
                           color: "#fff",
@@ -179,7 +180,7 @@ const OffersSection = () => {
                         lg
                       </Button>
                       <Button
-                        onClick={() => chooseSize(product.id, "xl")}
+                        onClick={() => chooseSize(product._id, "xl")}
                         sx={{
                           backgroundColor: "#222",
                           color: "#fff",
@@ -241,7 +242,7 @@ const OffersSection = () => {
                   <Box>
                     <IconButton
                       onClick={() =>
-                        handleCartButton(`offer-${product.id}-size`)
+                        handleCartButton(`offer-${product._id}-size`)
                       }
                       sx={{ color: "Black" }}
                     >

@@ -1,5 +1,4 @@
 "use client";
-
 import {
   Box,
   Button,
@@ -9,14 +8,14 @@ import {
   IconButton,
   Typography,
 } from "@mui/material";
-
 import CardGiftcardIcon from "@mui/icons-material/CardGiftcard";
-import { latestDrop } from "../Zustand/zustand";
-import { useCartStore } from "../Zustand/zustand";
+import { useCartStore } from "@/Zustand/CartState";
 import Image from "next/image";
+import { Product } from "@/lib/getProducts";
 
-const LatestDrop = () => {
+const LatestDrop = ({latestDrop} : {latestDrop: Product[] }) => {
   const { addItemToCart } = useCartStore();
+
 
   const handleCartButton = (id: string) => {
     if (document.getElementById(id)?.classList.contains("active-size")) {
@@ -100,7 +99,7 @@ const LatestDrop = () => {
           {latestDrop.map((product, index) => (
             <Grid
               size={{ xs: 6, md: 3 }}
-              key={product.id}
+              key={product._id}
               data-aos="fade-up"
               data-aos-delay={index * 200}
               data-aos-duration="1000"
@@ -134,13 +133,13 @@ const LatestDrop = () => {
                   >
                     <ButtonGroup
                       className="choose-size"
-                      id={`offer-${product.id}-size`}
+                      id={`offer-${product._id}-size`}
                       variant="contained"
                       orientation="vertical"
                     >
                       {" "}
                       <Button
-                        onClick={() => chooseSize(product.id, "xs")}
+                        onClick={() => chooseSize(product._id, "xs")}
                         sx={{
                           backgroundColor: "#222",
                           color: "#fff",
@@ -152,7 +151,7 @@ const LatestDrop = () => {
                         xs
                       </Button>
                       <Button
-                        onClick={() => chooseSize(product.id, "sm")}
+                        onClick={() => chooseSize(product._id, "sm")}
                         sx={{
                           backgroundColor: "#222",
                           color: "#fff",
@@ -163,7 +162,7 @@ const LatestDrop = () => {
                         sm
                       </Button>
                       <Button
-                        onClick={() => chooseSize(product.id, "m")}
+                        onClick={() => chooseSize(product._id, "m")}
                         sx={{
                           backgroundColor: "#222",
                           color: "#fff",
@@ -174,7 +173,7 @@ const LatestDrop = () => {
                         m
                       </Button>
                       <Button
-                        onClick={() => chooseSize(product.id, "lg")}
+                        onClick={() => chooseSize(product._id, "lg")}
                         sx={{
                           backgroundColor: "#222",
                           color: "#fff",
@@ -185,7 +184,7 @@ const LatestDrop = () => {
                         lg
                       </Button>
                       <Button
-                        onClick={() => chooseSize(product.id, "xl")}
+                        onClick={() => chooseSize(product._id, "xl")}
                         sx={{
                           backgroundColor: "#222",
                           color: "#fff",
@@ -236,7 +235,7 @@ const LatestDrop = () => {
                   <Box>
                     <IconButton
                       onClick={() =>
-                        handleCartButton(`offer-${product.id}-size`)
+                        handleCartButton(`offer-${product._id}-size`)
                       }
                       sx={{ color: "Black" }}
                     >

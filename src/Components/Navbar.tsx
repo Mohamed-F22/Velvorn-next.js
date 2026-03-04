@@ -14,7 +14,7 @@ import SearchIcon from "@mui/icons-material/Search";
 import { useRender } from "../Context/visibility/RenderContext";
 import { Badge, badgeClasses } from "@mui/material";
 import styled from "@emotion/styled";
-import { useCartStore } from "../Zustand/zustand";
+import { useCartStore } from "@/Zustand/CartState";
 import { MouseEvent, useState } from "react";
 
 const CartBadge = styled(Badge)`

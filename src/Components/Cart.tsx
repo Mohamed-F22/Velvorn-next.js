@@ -6,7 +6,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { useRender } from "../Context/visibility/RenderContext";
 import Swal from "sweetalert2";
-import { useCartStore } from "../Zustand/zustand";
+import { useCartStore } from "@/Zustand/CartState"; 
 
 const Cart = () => {
   const { overlayOff } = useRender();
@@ -155,7 +155,7 @@ const Cart = () => {
                         <Button
                           onClick={() =>
                             updateItemInCart(
-                              item.id,
+                              item._id,
                               item.selectedSize,
                               item.quantity - 1,
                               item.selectedSize,
@@ -174,7 +174,7 @@ const Cart = () => {
                           sx={{ border: "none !important", color: "#222" }}
                           onClick={() =>
                             updateItemInCart(
-                              item.id,
+                              item._id,
                               item.selectedSize,
                               item.quantity + 1,
                               item.selectedSize,
@@ -186,7 +186,7 @@ const Cart = () => {
                       </ButtonGroup>
                       <IconButton
                         onClick={() => {
-                          removeItemFromCart(item.id, item.selectedSize);
+                          removeItemFromCart(item._id, item.selectedSize);
                         }}
                         sx={{ color: "#cc0000ff" }}
                       >
@@ -199,7 +199,7 @@ const Cart = () => {
                           key={size}
                           onClick={() => {
                             updateItemInCart(
-                              item.id,
+                              item._id,
                               item.selectedSize,
                               item.quantity,
                               size,

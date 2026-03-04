@@ -7,7 +7,8 @@ import Cart from "@/Components/Cart";
 import AuthModals from "@/Context/visibility/AuthModals";
 import AOSInit from "./AOS";
 import "aos/dist/aos.css";
-import { AppRouterCacheProvider } from '@mui/material-nextjs/v14-appRouter';
+import { AppRouterCacheProvider } from "@mui/material-nextjs/v14-appRouter";
+import RunFetch from "./RunFetch";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -33,6 +34,7 @@ export default function RootLayout({
     <html lang="en">
       <body>
         <AppRouterCacheProvider>
+          <RunFetch />
           <AOSInit />
           <RenderProvider>
             <AuthModals />
