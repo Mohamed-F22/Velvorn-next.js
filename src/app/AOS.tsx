@@ -11,6 +11,5 @@ export default function AOSInit() {
       once: false,
     });
   }, []);
-
   return null;
 }
