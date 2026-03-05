@@ -30,6 +30,6 @@ const productSchema = new Schema<IProduct>(
 );
 
 const productModel =
-  models.Product || model<IProduct>("Product", productSchema);
+  models.product || model<IProduct>("product", productSchema);
 
 export default productModel;

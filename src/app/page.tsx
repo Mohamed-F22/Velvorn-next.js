@@ -1,12 +1,12 @@
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
 
-import { getProducts } from "@/lib/getProducts";
-import Footer from "../Components/Footer";
-import HeroSection from "../Components/HeroSection";
-import Landing from "../Components/Landing";
-import LatestDrop from "../Components/LatestDrop";
-import OffersSection from "../Components/OffersSection";
-import SportsWearCollection from "../Components/SportsWearCollection";
+import { getProducts } from "@/app/lib/actions";
+import Footer from "./Components/Footer";
+import HeroSection from "./Components/HeroSection";
+import Landing from "./Components/Landing";
+import LatestDrop from "./Components/LatestDrop";
+import OffersSection from "./Components/OffersSection";
+import SportsWearCollection from "./Components/SportsWearCollection";
 
 const Home = async () => {
   const productsData = await getProducts();

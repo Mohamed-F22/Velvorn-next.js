@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import {
   Box,
   Button,
@@ -10,11 +10,10 @@ import {
 } from "@mui/material";
 import CardGiftcardIcon from "@mui/icons-material/CardGiftcard";
 import Image from "next/image";
-import { useCartStore } from "@/Zustand/CartState";
-import { Product } from "@/lib/getProducts";
-import { useEffect, useState } from "react";
+import { useCartStore } from "@/app/Zustand/CartState";
+import { Product } from "@/app/lib/actions";
 
-const OffersSection =  ({offerProducts} : {offerProducts: Product[] }) => {
+const OffersSection = ({ offerProducts }: { offerProducts: Product[] }) => {
   const { addItemToCart } = useCartStore();
 
   const handleCartButton = (id: string) => {
@@ -222,7 +221,7 @@ const OffersSection =  ({offerProducts} : {offerProducts: Product[] }) => {
                         color: "#222",
                       }}
                     >
-                      {product.title}
+                      {product.title} 
                     </Typography>
                     <Typography variant="body2" sx={{ fontWeight: 700 }}>
                       {product.offerPrice?.toFixed(2)} ${" "}

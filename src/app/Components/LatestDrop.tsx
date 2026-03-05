@@ -9,13 +9,12 @@ import {
   Typography,
 } from "@mui/material";
 import CardGiftcardIcon from "@mui/icons-material/CardGiftcard";
-import { useCartStore } from "@/Zustand/CartState";
+import { useCartStore } from "@/app/Zustand/CartState";
 import Image from "next/image";
-import { Product } from "@/lib/getProducts";
+import { Product } from "@/app/lib/actions";
 
-const LatestDrop = ({latestDrop} : {latestDrop: Product[] }) => {
+const LatestDrop = ({ latestDrop }: { latestDrop: Product[] }) => {
   const { addItemToCart } = useCartStore();
-
 
   const handleCartButton = (id: string) => {
     if (document.getElementById(id)?.classList.contains("active-size")) {

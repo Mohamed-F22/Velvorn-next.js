@@ -2,13 +2,12 @@
 
 import { useEffect } from 'react';
 import AOS from 'aos';
-import { usePathname } from 'next/navigation';
 
 export default function AOSInit() {
   useEffect(() => {
     AOS.init({
       duration: 1000,
-      once: false,
+      once: true,
     });
   }, []);
   return null;

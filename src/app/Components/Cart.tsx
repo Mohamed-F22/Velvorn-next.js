@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import { Box, Container, IconButton, Typography } from "@mui/material";
 import Button from "@mui/material/Button";
 import ButtonGroup from "@mui/material/ButtonGroup";
@@ -6,7 +6,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { useRender } from "../Context/visibility/RenderContext";
 import Swal from "sweetalert2";
-import { useCartStore } from "@/Zustand/CartState"; 
+import { useCartStore } from "@/app/Zustand/CartState";
 
 const Cart = () => {
   const { overlayOff } = useRender();
@@ -104,7 +104,7 @@ const Cart = () => {
             >
               {cartItems.map((item) => (
                 <Box
-                  key={item.title}
+                  key={item.title + item.selectedSize}
                   p={1}
                   display={"flex"}
                   borderBottom={1}

@@ -14,7 +14,7 @@ import SearchIcon from "@mui/icons-material/Search";
 import { useRender } from "../Context/visibility/RenderContext";
 import { Badge, badgeClasses } from "@mui/material";
 import styled from "@emotion/styled";
-import { useCartStore } from "@/Zustand/CartState";
+import { useCartStore } from "@/app/Zustand/CartState";
 import { MouseEvent, useState } from "react";
 
 const CartBadge = styled(Badge)`
@@ -25,12 +25,10 @@ const CartBadge = styled(Badge)`
 `;
 
 function Navbar() {
-  const { cartItems } = useCartStore();
+  const { getCartCount } = useCartStore();
   const { overlayOn } = useRender();
 
-  const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(
-    null,
-  );
+  const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null);
 
   const handleOpenNavMenu = (event: MouseEvent<HTMLElement>) => {
     setAnchorElNav(event.currentTarget);
@@ -51,8 +49,12 @@ function Navbar() {
   return (
     <AppBar
       position="fixed"
-      sx={{ backgroundColor: "#fff", color: "#222", height: "64px", zIndex: 10 }}
-      
+      sx={{
+        backgroundColor: "#fff",
+        color: "#222",
+        height: "64px",
+        zIndex: 10,
+      }}
     >
       <Container>
         <Toolbar disableGutters>
@@ -101,7 +103,7 @@ function Navbar() {
                 sx={{ fontSize: { xs: "1.2rem", md: "1.5rem" } }}
               />
               <CartBadge
-                badgeContent={cartItems.length}
+                badgeContent={getCartCount()}
                 color="primary"
                 overlap="circular"
               />
@@ -185,7 +187,7 @@ function Navbar() {
                   sx={{ fontSize: { xs: "1.2rem", md: "1.5rem" } }}
                 />
                 <CartBadge
-                  badgeContent={cartItems.length}
+                  badgeContent={getCartCount()}
                   color="primary"
                   overlap="circular"
                 />

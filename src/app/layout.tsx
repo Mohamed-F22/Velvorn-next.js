@@ -1,14 +1,13 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import RenderProvider from "@/Context/visibility/RenderProvider";
-import Navbar from "@/Components/Navbar";
-import Cart from "@/Components/Cart";
-import AuthModals from "@/Context/visibility/AuthModals";
-import AOSInit from "./AOS";
+import RenderProvider from "@/app/Context/visibility/RenderProvider";
+import Navbar from "@/app/Components/Navbar";
+import Cart from "@/app/Components/Cart";
+import AuthModals from "@/app/Context/visibility/AuthModals";
+import AOSInit from "./services/AOS";
 import "aos/dist/aos.css";
 import { AppRouterCacheProvider } from "@mui/material-nextjs/v14-appRouter";
-import RunFetch from "./RunFetch";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -34,7 +33,6 @@ export default function RootLayout({
     <html lang="en">
       <body>
         <AppRouterCacheProvider>
-          <RunFetch />
           <AOSInit />
           <RenderProvider>
             <AuthModals />
