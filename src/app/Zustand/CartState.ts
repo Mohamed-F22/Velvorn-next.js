@@ -1,5 +1,6 @@
 import { create } from "zustand";
-import { getProductForCart } from "../lib/actions";
+import { getProduct } from "../lib/actions";
+import { Alert } from "../services/Alert";
 
 interface Product {
   _id: string;
@@ -18,7 +19,7 @@ interface CartItem extends Product {
 
 interface CartState {
   cartItems: CartItem[];
-  addItemToCart: (id: string, size: string) => void;
+  addItemToCart: (id: string, size: string, quantity: number) => void;
   updateItemInCart: (
     id: string,
     currentSize: string,
@@ -34,14 +35,19 @@ interface CartState {
 export const useCartStore = create<CartState>((set, get) => ({
   cartItems: [],
 
-  addItemToCart: async (id, size) => {
+  addItemToCart: async (id, size, quantity) => {
     try {
       const { cartItems } = get();
+
+      if (quantity <= 0) {
+        console.log("Invalid quantity");
+        return;
+      }
 
       const existingItem = cartItems.find(
         (item) => item._id === id && item.selectedSize === size,
       );
-      const product = await getProductForCart(id);
+      const product = await getProduct(id);
 
       if (!product) {
         console.log("Product not Found!");
@@ -49,31 +55,48 @@ export const useCartStore = create<CartState>((set, get) => ({
       }
 
       if (existingItem) {
-        const providedQuantity = product.stock[size];
+        const providedQuantity = product.stock[size.toLowerCase()];
 
-        if (existingItem.quantity >= providedQuantity) {
-          console.log("Reached maximum stock");
+        if (existingItem.quantity + quantity > providedQuantity) {
+          Alert.fire({
+            icon: "info",
+            title: "Reached maximam stock of this size!",
+          });
+          set({
+            cartItems: cartItems.map((item) =>
+              item._id === id && item.selectedSize === size
+                ? { ...item, quantity: providedQuantity }
+                : item,
+            ),
+          });
           return;
         }
+
         set({
           cartItems: cartItems.map((item) =>
             item._id === id && item.selectedSize === size
-              ? { ...item, quantity: item.quantity + 1 }
+              ? { ...item, quantity: item.quantity + quantity }
               : item,
           ),
         });
       } else {
-        const providedQuantity = product.stock[size];
+        const providedQuantity = product.stock[size.toLowerCase()];
 
         if (providedQuantity < 1) {
-          console.log("not Provided");
+          Alert.fire({
+            icon: "info",
+            title: "Item is out of stock!",
+          });
           return;
         }
-        const finalPrice = product.offerPrice || product.price;
         set({
           cartItems: [
             ...cartItems,
-            { ...product, price: finalPrice, quantity: 1, selectedSize: size },
+            {
+              ...product,
+              quantity: quantity,
+              selectedSize: size,
+            },
           ],
         });
       }
@@ -87,7 +110,7 @@ export const useCartStore = create<CartState>((set, get) => ({
       const { cartItems } = get();
       const targetSize = newSize || currentSize;
 
-      const product = await getProductForCart(id);
+      const product = await getProduct(id);
       if (!product) {
         console.log("Product not Found!");
         return;

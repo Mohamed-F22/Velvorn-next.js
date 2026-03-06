@@ -39,7 +39,7 @@ body {
 }
 @media (min-width: 1200px) {
   .cart {
-    right: -50%;
+    right: -40%;
   }
 }
 
@@ -49,4 +49,12 @@ body {
 
 .active-size {
   display: inline-flex !important;
+}
+
+.product-card:hover .imageContainer {
+  height: 110% !important;
+}
+.product-card:hover .product-title {
+  text-decoration: underline;
+  text-underline-offset: 4px;
 }

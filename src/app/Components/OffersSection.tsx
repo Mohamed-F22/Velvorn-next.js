@@ -1,40 +1,9 @@
-"use client";
-import {
-  Box,
-  Button,
-  ButtonGroup,
-  Container,
-  Grid,
-  IconButton,
-  Typography,
-} from "@mui/material";
-import CardGiftcardIcon from "@mui/icons-material/CardGiftcard";
+import { Box, Button, Container, Grid, Typography } from "@mui/material";
 import Image from "next/image";
-import { useCartStore } from "@/app/Zustand/CartState";
 import { Product } from "@/app/lib/actions";
+import Link from "next/link";
 
 const OffersSection = ({ offerProducts }: { offerProducts: Product[] }) => {
-  const { addItemToCart } = useCartStore();
-
-  const handleCartButton = (id: string) => {
-    if (document.getElementById(id)?.classList.contains("active-size")) {
-      document.getElementById(id)?.classList.remove("active-size");
-    } else {
-      const activeElements = document.querySelectorAll(".active-size");
-      activeElements.forEach((element) => {
-        element.classList.remove("active-size");
-      });
-      document.getElementById(id)?.classList.add("active-size");
-    }
-  };
-
-  const chooseSize = (_id: string, size: string) => {
-    addItemToCart(_id, size);
-    document
-      .getElementById(`offer-${_id}-size`)
-      ?.classList.remove("active-size");
-  };
-
   return (
     <Box sx={{ pt: 5, pb: 5 }}>
       <Container>
@@ -100,110 +69,23 @@ const OffersSection = ({ offerProducts }: { offerProducts: Product[] }) => {
               data-aos-duration="1000"
               data-aos-offset="300"
               data-aos-delay={index * 200}
+              sx={{ cursor: "pointer" }}
+              className="product-card"
             >
-              <Box sx={{ position: "relative" }}>
-                <Box sx={{ position: "relative" }}>
-                  <Box
-                    sx={{
-                      position: "relative",
-                      width: "100%",
-                      height: 400,
-                      bgcolor: "#f5f5f5",
+              <Link style={{ textDecoration: "none" }} href={`/${product._id}`}>
+                <Box
+                  sx={{ position: "relative", height: 400, overflow: "hidden" }}
+                >
+                  <Image
+                    src={product.img}
+                    alt={product.title}
+                    fill
+                    style={{
+                      objectFit: "cover",
+                      transition: "0.3s",
                     }}
-                  >
-                    <Image
-                      src={product.img}
-                      alt={product.title}
-                      fill
-                      style={{
-                        objectFit: "cover",
-                      }}
-                    />
-                  </Box>
-                  <Box
-                    sx={{
-                      position: "absolute",
-                      bottom: 10,
-                      right: "3px",
-                    }}
-                  >
-                    <ButtonGroup
-                      className="choose-size"
-                      id={`offer-${product._id}-size`}
-                      variant="contained"
-                    >
-                      {" "}
-                      <Button
-                        onClick={() => chooseSize(product._id, "xs")}
-                        sx={{
-                          backgroundColor: "#222",
-                          color: "#fff",
-                          outline: "none",
-                          border: "none !important",
-                          borderRadius: 0,
-                        }}
-                      >
-                        xs
-                      </Button>
-                      <Button
-                        onClick={() => chooseSize(product._id, "sm")}
-                        sx={{
-                          backgroundColor: "#222",
-                          color: "#fff",
-                          outline: "none",
-                          border: "none !important",
-                        }}
-                      >
-                        sm
-                      </Button>
-                      <Button
-                        onClick={() => chooseSize(product._id, "m")}
-                        sx={{
-                          backgroundColor: "#222",
-                          color: "#fff",
-                          outline: "none",
-                          border: "none !important",
-                        }}
-                      >
-                        m
-                      </Button>
-                      <Button
-                        onClick={() => chooseSize(product._id, "lg")}
-                        sx={{
-                          backgroundColor: "#222",
-                          color: "#fff",
-                          outline: "none",
-                          border: "none !important",
-                        }}
-                      >
-                        lg
-                      </Button>
-                      <Button
-                        onClick={() => chooseSize(product._id, "xl")}
-                        sx={{
-                          backgroundColor: "#222",
-                          color: "#fff",
-                          outline: "none",
-                          borderRadius: 0,
-                          border: "none !important",
-                          "&::before": {
-                            content: '""',
-                            position: "absolute",
-                            bottom: "-20px",
-                            left: "50%",
-                            transform: "translateX(-10%)",
-                            width: 0,
-                            height: 0,
-                            border: "10px solid",
-                            borderColor:
-                              "#222 transparent transparent transparent",
-                          },
-                        }}
-                      >
-                        xl
-                      </Button>
-                    </ButtonGroup>
-                  </Box>
+                    className="imageContainer"
+                  />
                 </Box>
                 <Box
                   sx={{
@@ -214,6 +96,7 @@ const OffersSection = ({ offerProducts }: { offerProducts: Product[] }) => {
                 >
                   <Box>
                     <Typography
+                      className="product-title"
                       variant="subtitle1"
                       sx={{
                         fontWeight: 600,
@@ -221,9 +104,12 @@ const OffersSection = ({ offerProducts }: { offerProducts: Product[] }) => {
                         color: "#222",
                       }}
                     >
-                      {product.title} 
+                      {product.title}
                     </Typography>
-                    <Typography variant="body2" sx={{ fontWeight: 700 }}>
+                    <Typography
+                      variant="body2"
+                      sx={{ fontWeight: 700, color: "#222" }}
+                    >
                       {product.offerPrice?.toFixed(2)} ${" "}
                       <Typography
                         component="span"
@@ -238,18 +124,8 @@ const OffersSection = ({ offerProducts }: { offerProducts: Product[] }) => {
                       </Typography>
                     </Typography>
                   </Box>
-                  <Box>
-                    <IconButton
-                      onClick={() =>
-                        handleCartButton(`offer-${product._id}-size`)
-                      }
-                      sx={{ color: "Black" }}
-                    >
-                      <CardGiftcardIcon />
-                    </IconButton>
-                  </Box>
                 </Box>
-              </Box>
+              </Link>
             </Grid>
           ))}
         </Grid>

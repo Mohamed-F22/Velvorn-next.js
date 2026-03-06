@@ -34,13 +34,12 @@ export async function getProducts() {
   return { offerProducts, latestDrop, products };
 }
 
-export async function getProductForCart(id: string) {
+export async function getProduct(id: string) {
   try {
     await dbConnect();
 
     const product = await productModel
       .findById(id)
-      .select("_id title price offerPrice img stock")
       .lean();
 
     if (!product) return null;
