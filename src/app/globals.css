@@ -52,7 +52,10 @@ body {
 }
 
 .product-card:hover .imageContainer {
-  height: 110% !important;
+  transform: scale(1.1);
+}
+.imageContainer {
+  transform-origin: center;
 }
 .product-card:hover .product-title {
   text-decoration: underline;

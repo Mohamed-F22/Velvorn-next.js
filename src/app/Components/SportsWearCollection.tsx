@@ -4,7 +4,7 @@ const SportsWearCollection = () => {
   return (
     <Box
       sx={{
-        minHeight: "calc(100vh - 100px)",
+        minHeight: "80vh",
         background:
           "linear-gradient(90deg, #e5e7eb 0%, #d1d5db 5%, #6e6e6eff 100%)",
         display: "flex",
@@ -37,7 +37,7 @@ const SportsWearCollection = () => {
             data-aos-duration="1000"
             data-aos-offset="300"
           >
-            <Typography variant="h4" sx={{ fontWeight: "600", mb: 3 }}>
+            <Typography variant="h3" sx={{ fontWeight: "600", mb: 3 }}>
               SPORTSWEAR COLLECTION
             </Typography>
             <Typography
@@ -46,10 +46,6 @@ const SportsWearCollection = () => {
                 mb: {
                   xs: 2,
                   sm: 5,
-                },
-                display: {
-                  xs: "none",
-                  md: "block",
                 },
               }}
             >
@@ -77,12 +73,11 @@ const SportsWearCollection = () => {
       <Box
         sx={{
           position: "absolute",
-          zIndex: 1,
           bottom: 0,
-          height: "100%",
-          left: { xs: "50%", sm: "50%", md: "25%" },
+          left: { xs: "50%", md: "30%" },
           transform: " translateX(-50%)",
-          width: { xs: "100%", md: "50%" },
+          width: { xs: "150%", md: "70%" },
+          height: "100%",
         }}
       >
         <Box
@@ -92,10 +87,13 @@ const SportsWearCollection = () => {
           data-aos-offset="300"
         >
           <Image
-            src={"/sports-wear-collection.png"}
+            src="/sports-wear-collection.png"
             alt="Sports Wear Collection Image"
             fill
-            style={{ objectFit: "contain" }}
+            style={{
+              objectFit: "contain",
+              objectPosition: "bottom center",
+            }}
           />
         </Box>
       </Box>

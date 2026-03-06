@@ -1,7 +1,6 @@
 import { Box, Button, Container, Grid, Typography } from "@mui/material";
-import Image from "next/image";
 import { Product } from "@/app/lib/actions";
-import Link from "next/link";
+import ProductCard from "./ProductCard";
 
 const LatestDrop = ({ latestDrop }: { latestDrop: Product[] }) => {
   return (
@@ -66,56 +65,17 @@ const LatestDrop = ({ latestDrop }: { latestDrop: Product[] }) => {
         <Grid container spacing={3}>
           {latestDrop.map((product, index) => (
             <Grid
-                size={{ xs: 6, md: 3 }}
-                key={product._id}
-                data-aos="fade-up"
-                data-aos-duration="1000"
-                data-aos-offset="300"
-                data-aos-delay={index * 200}
-                sx={{ cursor: "pointer" }}
-                className="product-card"
-              >
-            <Link style={{textDecoration:"none"}} href={`/${product._id}`}>
-                <Box
-                  sx={{ position: "relative", height: 400, overflow: "hidden" }}
-                >
-                  <Image
-                    src={product.img}
-                    alt={product.title}
-                    fill
-                    style={{
-                      objectFit: "cover",
-                      transition: "0.3s",
-                    }}
-                    className="imageContainer"
-                  />
-                </Box>
-                <Box
-                  sx={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                  }}
-                >
-                  <Box>
-                    <Typography
-                      className="product-title"
-                      variant="subtitle1"
-                      sx={{
-                        fontWeight: 600,
-                        letterSpacing: 1.5,
-                        color: "#222",
-                      }}
-                    >
-                      {product.title}
-                    </Typography>
-                    <Typography variant="body2" sx={{ fontWeight: 700,color: "#222" }}>
-                      {product.price.toFixed(2)} ${" "}
-                    </Typography>
-                  </Box>
-                </Box>
-            </Link>
-              </Grid>
+              size={{ xs: 6, md: 3 }}
+              key={product._id}
+              data-aos="fade-up"
+              data-aos-duration="1000"
+              data-aos-offset="300"
+              data-aos-delay={index * 200}
+              sx={{ cursor: "pointer" }}
+              className="product-card"
+            >
+              <ProductCard product={product} />
+            </Grid>
           ))}
         </Grid>
       </Container>
