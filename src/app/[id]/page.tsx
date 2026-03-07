@@ -1,7 +1,7 @@
 import { Box, Container, Grid, Typography } from "@mui/material";
 import { getProduct } from "../lib/actions";
-import Image from "next/image";
 import SizeNumberForm from "../Components/SizeNumberForm";
+import ProductGallery from "../Components/ProductGallary";
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -16,52 +16,7 @@ export default async function BlogPost({ params }: PageProps) {
       <Container>
         <Grid container>
           <Grid size={{ xs: 12, md: 6 }}>
-            <Grid container>
-              <Grid size={{ xs: 3 }}>
-                <Box sx={{ pb: "5px", pr: "10px" }}>
-                  <Image
-                    src={product.img}
-                    width={400}
-                    height={500}
-                    style={{ width: "100%", height: "auto" }}
-                    alt={product.title}
-                  />
-                </Box>
-                <Box
-                  sx={{
-                    pb: "5px",
-                    pt: "5px",
-                    pr: "10px",
-                  }}
-                >
-                  <Image
-                    src={product.img}
-                    width={400}
-                    height={500}
-                    style={{ width: "100%", height: "auto" }}
-                    alt={product.title}
-                  />
-                </Box>
-                <Box sx={{ pt: "5px", pr: "10px" }}>
-                  <Image
-                    src={product.img}
-                    width={400}
-                    height={500}
-                    style={{ width: "100%", height: "auto" }}
-                    alt={product.title}
-                  />
-                </Box>
-              </Grid>
-              <Grid size={{ xs: 9 }}>
-                <Image
-                  src={product.img}
-                  width={400}
-                  height={500}
-                  style={{ width: "100%", height: "auto" }}
-                  alt={product.title}
-                />
-              </Grid>
-            </Grid>
+            <ProductGallery product={product} />
           </Grid>
 
           <Grid sx={{ pl: { md: 5 } }} size={{ md: 6 }}>
@@ -84,7 +39,6 @@ export default async function BlogPost({ params }: PageProps) {
                 </Typography>
               </Typography>
               <Typography
-                // variant="body2"
                 color="text.secondary"
                 gutterBottom
                 sx={{ mb: 1.5 }}

@@ -12,7 +12,7 @@ const ProductCard = (params: { product: Product }) => {
         sx={{ position: "relative", overflow: "hidden" }}
       >
         <Image
-          src={product.img}
+          src={product.imgs[0]}
           alt={product.title}
           width={400}
           height={500}

@@ -20,11 +20,11 @@ const SportsWearCollection = () => {
             position: "absolute",
             bottom: {
               sm: "10%",
-              md: "50%",
+              md: "45%",
             },
             left: {
               xs: "50%",
-              md: "50%",
+              md: "45%",
             },
             transform: { xs: "translateX(-50%)", md: "translateY(50%)" },
             zIndex: 2,

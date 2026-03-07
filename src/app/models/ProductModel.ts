@@ -2,7 +2,7 @@ import mongoose, { model, models, Schema } from "mongoose";
 
 export interface IProduct extends Document {
   title: string;
-  img: string;
+  imgs: string[];
   price: number;
   offerPrice: number | null;
   stock: { xs: number; sm: number; md: number; lg: number; xl: number };
@@ -12,8 +12,8 @@ export interface IProduct extends Document {
 const productSchema = new Schema<IProduct>(
   {
     title: { type: String, required: true, trim: true },
-    img: { type: String, required: true },
-    price: { type: Number, required: true, min: 0 },
+    imgs: { type: [String], required: true },
+    price: { type: Number, required: true, min: 0 }, 
     offerPrice: { type: Number, default: null },
     stock: {
       xs: { type: Number, default: 0 },

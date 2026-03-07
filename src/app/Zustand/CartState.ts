@@ -5,7 +5,7 @@ import { Alert } from "../services/Alert";
 interface Product {
   _id: string;
   title: string;
-  img: string;
+  imgs: string[];
   price: number;
   offerPrice: number | null;
   stock: { xs: number; sm: number; md: number; lg: number; xl: number };

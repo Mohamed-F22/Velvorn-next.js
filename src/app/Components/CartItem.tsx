@@ -1,6 +1,5 @@
 "use client";
 import { Box, IconButton, Typography } from "@mui/material";
-import { useState } from "react";
 import { useCartStore } from "@/app/Zustand/CartState";
 import DeleteIcon from "@mui/icons-material/Delete";
 import RemoveIcon from "@mui/icons-material/Remove";
@@ -10,7 +9,7 @@ import Image from "next/image";
 interface item {
   _id: string;
   title: string;
-  img: string;
+  imgs: string[];
   price: number;
   offerPrice: number | null;
   stock: { xs: number; sm: number; md: number; lg: number; xl: number };
@@ -21,7 +20,6 @@ interface item {
 
 const CartItem = (params: { item: item }) => {
   const { item } = params;
-  const [quantity, setQuantity] = useState(item.quantity);
   const { removeItemFromCart, updateItemInCart } = useCartStore();
 
   return (
@@ -45,7 +43,7 @@ const CartItem = (params: { item: item }) => {
         }}
       >
         <Image
-          src={item.img}
+          src={item.imgs[0]}
           alt={item.title}
           height={160}
           width={150}
@@ -112,13 +110,12 @@ const CartItem = (params: { item: item }) => {
           >
             <IconButton
               onClick={() => {
-                (updateItemInCart(
+                updateItemInCart(
                   item._id,
                   item.selectedSize,
                   item.quantity - 1,
                   item.selectedSize,
-                ),
-                  setQuantity(Math.max(1, quantity - 1)));
+                );
               }}
               size="small"
               sx={{ borderRadius: 0, p: 1.5 }}
@@ -126,7 +123,7 @@ const CartItem = (params: { item: item }) => {
               <RemoveIcon fontSize="small" />
             </IconButton>
             <Typography sx={{ width: 40, textAlign: "center" }}>
-              {quantity}
+              {item.quantity}
             </Typography>
             <IconButton
               onClick={() => {
@@ -134,8 +131,7 @@ const CartItem = (params: { item: item }) => {
                   item.stock[
                     item.selectedSize.toLowerCase() as keyof typeof item.stock
                   ];
-                if (quantity < currentStock) {
-                  setQuantity(quantity + 1);
+                if (item.quantity < currentStock) {
                   updateItemInCart(
                     item._id,
                     item.selectedSize,
@@ -149,7 +145,7 @@ const CartItem = (params: { item: item }) => {
                 borderRadius: 0,
                 p: 1.5,
                 color:
-                  quantity >=
+                  item.quantity >=
                   item.stock[
                     item.selectedSize.toLowerCase() as keyof typeof item.stock
                   ]
@@ -196,7 +192,10 @@ const CartItem = (params: { item: item }) => {
               mr: 1,
             }}
           >
-            {item.offerPrice ?? item.price * item.quantity} $
+            {item.offerPrice
+              ? item.offerPrice * item.quantity
+              : item.price * item.quantity}{" "}
+            $
           </Typography>
         </Typography>
       </Box>
