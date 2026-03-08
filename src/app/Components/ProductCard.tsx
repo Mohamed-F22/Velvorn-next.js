@@ -47,20 +47,19 @@ const ProductCard = (params: { product: Product }) => {
           <Typography variant="body2" sx={{ fontWeight: 700, color: "#222" }}>
             {product.offerPrice ? (
               <>
+                <Typography component="span" sx={{ fontWeight: 700, mr: 1, }}>
+                  {product.offerPrice.toFixed(2)} $
+                </Typography>
                 <Typography
                   component="span"
                   sx={{
                     textDecoration: "line-through",
                     color: "#999",
-                    mr: 1,
+                    
                     fontWeight: 400,
                   }}
                 >
                   {product.price.toFixed(2)} $
-                </Typography>
-
-                <Typography component="span" sx={{ fontWeight: 700 }}>
-                  {product.offerPrice.toFixed(2)} $
                 </Typography>
               </>
             ) : (

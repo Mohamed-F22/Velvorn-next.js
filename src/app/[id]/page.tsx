@@ -22,27 +22,35 @@ export default async function BlogPost({ params }: PageProps) {
           <Grid sx={{ pl: { md: 5 } }} size={{ md: 6 }}>
             <Box mb={3}>
               <Typography variant="h2">{product.title}</Typography>
-
-              <Typography variant="body2" sx={{ fontSize: 30, color: "#222" }}>
-                {product.offerPrice?.toFixed(2)} ${" "}
-                <Typography
-                  component="span"
-                  sx={{
-                    textDecoration: "line-through",
-                    color: "#999",
-                    ml: 1,
-                    fontWeight: 400,
-                    fontSize: 20,
-                  }}
-                >
-                  {product.price.toFixed(2)} $
-                </Typography>
-              </Typography>
               <Typography
-                color="text.secondary"
-                gutterBottom
-                sx={{ mb: 1.5 }}
+                variant="body2"
+                sx={{ fontWeight: 700, color: "#222" }}
               >
+                {product.offerPrice ? (
+                  <>
+                    {" "}
+                    <Typography component="span" sx={{ mr: 1, fontSize: 30 }}>
+                      {product.offerPrice.toFixed(2)} ${" "}
+                    </Typography>
+                    <Typography
+                      component="span"
+                      sx={{
+                        textDecoration: "line-through",
+                        color: "#999",
+                        fontWeight: 400,
+                        fontSize: 20,
+                      }}
+                    >
+                      {product.price.toFixed(2)} $
+                    </Typography>
+                  </>
+                ) : (
+                  <Typography component="span" sx={{ fontSize: 30 }}>
+                    {product.price.toFixed(2)} $
+                  </Typography>
+                )}
+              </Typography>
+              <Typography color="text.secondary" gutterBottom sx={{ mb: 1.5 }}>
                 {product.desc}
               </Typography>
             </Box>
