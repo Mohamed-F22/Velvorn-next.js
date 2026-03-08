@@ -23,6 +23,12 @@ importers:
       '@mui/material-nextjs':
         specifier: ^7.3.8
         version: 7.3.8(@emotion/cache@11.14.0)(@emotion/react@11.14.0(@types/react@19.2.14)(react@19.2.3))(@types/react@19.2.14)(next@16.1.6(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(react@19.2.3)
+      '@splidejs/react-splide':
+        specifier: github:splidejs/react-splide
+        version: https://codeload.github.com/splidejs/react-splide/tar.gz/9a3f69770092822dddaf15797de9bb780c79a8f0
+      '@splidejs/splide':
+        specifier: ^4.1.4
+        version: 4.1.4
       aos:
         specifier: ^2.3.4
         version: 2.3.4
@@ -503,6 +509,13 @@ packages:
 
   '@popperjs/core@2.11.8':
     resolution: {integrity: sha512-P1st0aksCrn9sGZhp8GMYwBnQsbvAWsZAX44oXNNvLHGqAOcoVxmjZiohstwQ7SqKnbR47akdNi+uleWD8+g6A==}
+
+  '@splidejs/react-splide@https://codeload.github.com/splidejs/react-splide/tar.gz/9a3f69770092822dddaf15797de9bb780c79a8f0':
+    resolution: {tarball: https://codeload.github.com/splidejs/react-splide/tar.gz/9a3f69770092822dddaf15797de9bb780c79a8f0}
+    version: 0.7.12
+
+  '@splidejs/splide@4.1.4':
+    resolution: {integrity: sha512-5I30evTJcAJQXt6vJ26g2xEkG+l1nXcpEw4xpKh0/FWQ8ozmAeTbtniVtVmz2sH1Es3vgfC4SS8B2X4o5JMptA==}
 
   '@swc/helpers@0.5.15':
     resolution: {integrity: sha512-JQ5TuMi45Owi4/BIMAJBoSQoOJu12oOk/gADqlcUL9JEdHB8vyjUSsxqeNXnmXHjYKMi2WcYtezGEEhqUI/E2g==}
@@ -1359,6 +1372,12 @@ snapshots:
     optional: true
 
   '@popperjs/core@2.11.8': {}
+
+  '@splidejs/react-splide@https://codeload.github.com/splidejs/react-splide/tar.gz/9a3f69770092822dddaf15797de9bb780c79a8f0':
+    dependencies:
+      '@splidejs/splide': 4.1.4
+
+  '@splidejs/splide@4.1.4': {}
 
   '@swc/helpers@0.5.15':
     dependencies:
