@@ -1,10 +1,10 @@
 import { Box, Button, Container, Grid, Typography } from "@mui/material";
 import { Product } from "@/app/lib/actions";
-import ProductCard from "./ProductCard";
+import ProductsCarousel from "./ProductsCarousel";
 
 const OffersSection = ({ offerProducts }: { offerProducts: Product[] }) => {
   return (
-    <Box sx={{ pt: 5, pb: 5 }}>
+    <Box sx={{ pt: 5, pb: 5, overflow: "hidden" }}>
       <Container>
         <Grid sx={{ pt: 5, pb: 5 }} container justifyContent={"space-between"}>
           <Grid
@@ -59,23 +59,8 @@ const OffersSection = ({ offerProducts }: { offerProducts: Product[] }) => {
             </Box>
           </Grid>
         </Grid>
-        <Grid container spacing={3}>
-          {offerProducts.map((product, index) => (
-            <Grid
-              size={{ xs: 6, md: 4 }}
-              key={product._id}
-              data-aos="fade-up"
-              data-aos-duration="1000"
-              data-aos-offset="300"
-              data-aos-delay={index * 200}
-              sx={{ cursor: "pointer" }}
-              className="product-card"
-            >
-              <ProductCard product={product} />
-            </Grid>
-          ))}
-        </Grid>
       </Container>
+      <ProductsCarousel products={offerProducts} />
     </Box>
   );
 };

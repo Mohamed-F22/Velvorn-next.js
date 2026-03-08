@@ -1,6 +1,7 @@
 import { Box, Button, Container, Grid, Typography } from "@mui/material";
 import { Product } from "@/app/lib/actions";
 import ProductCard from "./ProductCard";
+import ProductsCarousel from "./ProductsCarousel";
 
 const LatestDrop = ({ latestDrop }: { latestDrop: Product[] }) => {
   return (
@@ -62,22 +63,7 @@ const LatestDrop = ({ latestDrop }: { latestDrop: Product[] }) => {
             </Box>
           </Grid>
         </Grid>
-        <Grid container spacing={3}>
-          {latestDrop.map((product, index) => (
-            <Grid
-              size={{ xs: 6, md: 3 }}
-              key={product._id}
-              data-aos="fade-up"
-              data-aos-duration="1000"
-              data-aos-offset="300"
-              data-aos-delay={index * 200}
-              sx={{ cursor: "pointer" }}
-              className="product-card"
-            >
-              <ProductCard product={product} />
-            </Grid>
-          ))}
-        </Grid>
+        <ProductsCarousel products={latestDrop} />
       </Container>
     </Box>
   );

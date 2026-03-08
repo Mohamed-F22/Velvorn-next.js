@@ -61,3 +61,33 @@ body {
   text-decoration: underline;
   text-underline-offset: 4px;
 }
+
+@media (min-width: 0px) {
+  .splide__slide {
+    width: 15rem !important;
+  }
+  .splide-wrapper {
+    padding: 0 17px;
+  }
+}
+@media (min-width: 600px) {
+  .splide__slide {
+    width: 17rem !important;
+  }
+  .splide-wrapper {
+    padding: 0 20px;
+  }
+}
+@media (min-width: 900px) {
+  .splide__slide {
+    width: 20rem !important;
+  }
+  .splide-wrapper {
+    padding: 0 60px;
+  }
+}
+@media (min-width: 1200px) {
+  .splide__slide {
+    width: 23rem !important;
+  }
+}
