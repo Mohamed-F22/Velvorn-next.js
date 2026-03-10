@@ -59,8 +59,8 @@ const OffersSection = ({ offerProducts }: { offerProducts: Product[] }) => {
             </Box>
           </Grid>
         </Grid>
-      </Container>
       <ProductsCarousel products={offerProducts} />
+      </Container>
     </Box>
   );
 };

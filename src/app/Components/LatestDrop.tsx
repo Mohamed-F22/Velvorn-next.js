@@ -63,8 +63,8 @@ const LatestDrop = ({ latestDrop }: { latestDrop: Product[] }) => {
             </Box>
           </Grid>
         </Grid>
-      </Container>
       <ProductsCarousel products={latestDrop} />
+      </Container>
     </Box>
   );
 };

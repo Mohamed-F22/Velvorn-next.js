@@ -14,7 +14,7 @@ const ProductsCarousel = ({ products }: { products: Product[] }) => {
         maxWidth: "1200px",
         margin: "0 auto",
         py: 0,
-        px: { xs: "17px", sm: "20px", md: "60px" },
+        px: { xs: "0px", md: "30px", lg: "0px" },
       }}
     >
       <Splide

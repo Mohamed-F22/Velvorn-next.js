@@ -17,6 +17,9 @@
     "@splidejs/splide": "^4.1.4",
     "aos": "^2.3.4",
     "axios": "^1.13.6",
+    "bcrypt": "^6.0.0",
+    "jose": "^6.2.1",
+    "jsonwebtoken": "^9.0.3",
     "mongoose": "^9.2.3",
     "next": "16.1.6",
     "react": "19.2.3",
@@ -26,6 +29,8 @@
   },
   "devDependencies": {
     "@types/aos": "^3.0.7",
+    "@types/bcrypt": "^6.0.0",
+    "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
