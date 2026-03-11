@@ -16,7 +16,9 @@ import { Badge, badgeClasses } from "@mui/material";
 import styled from "@emotion/styled";
 import { useCartStore } from "@/app/Zustand/CartState";
 import { MouseEvent, useState } from "react";
-
+import { useAuthStore } from "../Zustand/AuthStore";
+import PersonIcon from "@mui/icons-material/Person";
+import { useRouter } from "next/navigation";
 const CartBadge = styled(Badge)`
   & .${badgeClasses.badge} {
     top: -8px;
@@ -25,8 +27,13 @@ const CartBadge = styled(Badge)`
 `;
 
 function Navbar() {
+  const user = useAuthStore((state) => state.user);
+  const logout = useAuthStore((state) => state.logout);
+
   const { getCartCount } = useCartStore();
   const { overlayOn } = useRender();
+
+  const router = useRouter();
 
   const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null);
 
@@ -94,10 +101,74 @@ function Navbar() {
               alignItems: "center",
             }}
           >
-            {" "}
+            <Typography>{user?.fullName}.</Typography>
+
             <IconButton sx={{ color: "#222" }}>
               <SearchIcon sx={{ fontSize: { xs: "1.2rem", md: "1.5rem" } }} />
             </IconButton>
+            <Box sx={{ display: { xs: "block" } }}>
+              {user ? (
+                <IconButton
+                  size="large"
+                  aria-label="account of current user"
+                  aria-controls="menu-appbar"
+                  aria-haspopup="true"
+                  onClick={handleOpenNavMenu}
+                  color="inherit"
+                  sx={{ color: "#222" }}
+                >
+                  <PersonIcon
+                    sx={{ fontSize: { xs: "1.2rem", md: "1.5rem" } }}
+                  />
+                </IconButton>
+              ) : (
+                <IconButton
+                  size="large"
+                  aria-label="account of current user"
+                  aria-controls="menu-appbar"
+                  aria-haspopup="true"
+                  onClick={() => router.push("/login")}
+                  color="inherit"
+                  sx={{ color: "#222" }}
+                >
+                  <PersonIcon
+                    sx={{ fontSize: { xs: "1.2rem", md: "1.5rem" } }}
+                  />
+                </IconButton>
+              )}
+
+              <Menu
+                id="menu-appbar"
+                anchorEl={anchorElNav}
+                anchorOrigin={{
+                  vertical: "bottom",
+                  horizontal: "left",
+                }}
+                keepMounted
+                transformOrigin={{
+                  vertical: "top",
+                  horizontal: "left",
+                }}
+                open={Boolean(anchorElNav)}
+                onClose={handleCloseNavMenu}
+                onClick={handleCloseNavMenu}
+                sx={{ display: { xs: "block" } }}
+              >
+                <MenuItem>
+                  <Typography>Hello, {user?.fullName}.</Typography>
+                </MenuItem>
+                <MenuItem>
+                  <Typography>Profile</Typography>
+                </MenuItem>
+                <MenuItem
+                  onClick={async () => {
+                    await logout();
+                  }}
+                >
+                  <Typography color="error">Logout</Typography>
+                </MenuItem>{" "}
+              </Menu>
+            </Box>
             <IconButton onClick={handleCart} sx={{ color: "#222" }}>
               <CardGiftcardIcon
                 sx={{ fontSize: { xs: "1.2rem", md: "1.5rem" } }}
@@ -143,6 +214,7 @@ function Navbar() {
                 }}
                 open={Boolean(anchorElNav)}
                 onClose={handleCloseNavMenu}
+                onClick={handleCloseNavMenu}
                 sx={{ display: { xs: "block", md: "none" } }}
               >
                 <MenuItem>
@@ -182,6 +254,69 @@ function Navbar() {
               <IconButton sx={{ color: "#222" }}>
                 <SearchIcon sx={{ fontSize: { xs: "1.2rem", md: "1.5rem" } }} />
               </IconButton>
+              <Box sx={{ display: { xs: "block" } }}>
+                {user ? (
+                  <IconButton
+                    size="large"
+                    aria-label="account of current user"
+                    aria-controls="menu-appbar"
+                    aria-haspopup="true"
+                    onClick={handleOpenNavMenu}
+                    color="inherit"
+                    sx={{ color: "#222" }}
+                  >
+                    <PersonIcon
+                      sx={{ fontSize: { xs: "1.2rem", md: "1.5rem" } }}
+                    />
+                  </IconButton>
+                ) : (
+                  <IconButton
+                    size="large"
+                    aria-label="account of current user"
+                    aria-controls="menu-appbar"
+                    aria-haspopup="true"
+                    onClick={() => router.push("/login")}
+                    color="inherit"
+                    sx={{ color: "#222" }}
+                  >
+                    <PersonIcon
+                      sx={{ fontSize: { xs: "1.2rem", md: "1.5rem" } }}
+                    />
+                  </IconButton>
+                )}
+
+                <Menu
+                  id="menu-appbar"
+                  anchorEl={anchorElNav}
+                  anchorOrigin={{
+                    vertical: "bottom",
+                    horizontal: "left",
+                  }}
+                  keepMounted
+                  transformOrigin={{
+                    vertical: "top",
+                    horizontal: "left",
+                  }}
+                  open={Boolean(anchorElNav)}
+                  onClose={handleCloseNavMenu}
+                  onClick={handleCloseNavMenu}
+                  sx={{ display: { xs: "block" } }}
+                >
+                  <MenuItem>
+                    <Typography>Hello, {user?.fullName}.</Typography>
+                  </MenuItem>
+                  <MenuItem>
+                    <Typography>Profile</Typography>
+                  </MenuItem>
+                  <MenuItem
+                    onClick={async () => {
+                      await logout();
+                    }}
+                  >
+                    <Typography color="error">Logout</Typography>
+                  </MenuItem>{" "}
+                </Menu>
+              </Box>
               <IconButton onClick={handleCart} sx={{ color: "#222" }}>
                 <CardGiftcardIcon
                   sx={{ fontSize: { xs: "1.2rem", md: "1.5rem" } }}

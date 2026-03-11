@@ -1,14 +1,10 @@
-"use client"
+"use client";
 import Overlay from "../../Components/Overlay";
 import { useRender } from "./RenderContext";
 
-const AuthModals = () => {
+const RenderModals = () => {
   const { isOverlayVisible } = useRender();
-  return (
-    <>
-      {isOverlayVisible && <Overlay />}
-    </>
-  );
+  return <>{isOverlayVisible && <Overlay />}</>;
 };
 
-export default AuthModals
+export default RenderModals;

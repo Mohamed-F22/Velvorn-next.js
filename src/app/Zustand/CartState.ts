@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { getProduct } from "../lib/actions";
-import { Alert } from "../services/Alert";
+import { Alert } from "../Components/Alert";
 import { persist, createJSONStorage } from "zustand/middleware"; // أضف هذا السطر
 
 interface Product {

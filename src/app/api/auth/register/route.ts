@@ -25,7 +25,7 @@ export async function POST(req: Request) {
     const findUser = await userModel.findOne({ email });
     if (findUser) {
       return NextResponse.json(
-        { message: "User already exists!" },
+        { message: "There is an account with this email!", status: 400 },
         { status: 400 },
       );
     }
@@ -38,9 +38,17 @@ export async function POST(req: Request) {
       password: hashedPassword,
     });
 
-    const token = jwt.sign({ fullName, email }, SECRET);
+    const token = jwt.sign({ fullName, email }, SECRET, { expiresIn: "1d" });
 
-    const response = NextResponse.json({ message: "User created" });
+    const response = NextResponse.json({
+      message: "Welcome To Velvorn",
+      status: 200,
+      user: {
+        fullName,
+        email
+      },
+    });
+
     response.cookies.set("token", token, {
       httpOnly: true,
       secure: true,
@@ -52,7 +60,7 @@ export async function POST(req: Request) {
   } catch (err) {
     console.error("Register Error", err);
     return NextResponse.json(
-      { message: "Something Went Wrong!" },
+      { message: "Something Went Wrong!", status: 500 },
       { status: 500 },
     );
   }

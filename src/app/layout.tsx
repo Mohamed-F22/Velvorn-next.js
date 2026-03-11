@@ -4,10 +4,11 @@ import "./globals.css";
 import RenderProvider from "@/app/Context/visibility/RenderProvider";
 import Navbar from "@/app/Components/Navbar";
 import Cart from "@/app/Components/Cart";
-import AuthModals from "@/app/Context/visibility/AuthModals";
-import AOSInit from "./services/AOS";
+import AOSInit from "./Components/AOS";
 import "aos/dist/aos.css";
 import { AppRouterCacheProvider } from "@mui/material-nextjs/v14-appRouter";
+import AuthProvider from "./providers/AuthProvider";
+import RenderModals from "@/app/Context/visibility/RenderModals";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -35,10 +36,12 @@ export default function RootLayout({
         <AppRouterCacheProvider>
           <AOSInit />
           <RenderProvider>
-            <AuthModals />
-            <Cart />
-            <Navbar />
-            {children}
+            <AuthProvider>
+              <RenderModals />
+              <Cart />
+              <Navbar />
+              {children}
+            </AuthProvider>
           </RenderProvider>
         </AppRouterCacheProvider>
       </body>
