@@ -101,8 +101,6 @@ function Navbar() {
               alignItems: "center",
             }}
           >
-            <Typography>{user?.fullName}.</Typography>
-
             <IconButton sx={{ color: "#222" }}>
               <SearchIcon sx={{ fontSize: { xs: "1.2rem", md: "1.5rem" } }} />
             </IconButton>
