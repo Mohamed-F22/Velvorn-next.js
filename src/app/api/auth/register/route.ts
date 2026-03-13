@@ -3,6 +3,7 @@ import { dbConnect } from "@/app/lib/mongodb";
 import userModel from "@/app/models/userModel";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
+import cartModel from "@/app/models/cartModel";
 
 const SECRET = process.env.SECRET_JWT as string;
 
@@ -32,17 +33,25 @@ export async function POST(req: Request) {
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    await userModel.create({
+    const newUser = await userModel.create({
       email,
       fullName,
       password: hashedPassword,
     });
 
-    const token = jwt.sign({ fullName, email }, SECRET, { expiresIn: "1d" });
+    await cartModel.create({
+      userId: newUser._id,
+      items: [],
+      totalAmount: 0,
+      status: "active",
+    });
+
+    const token = jwt.sign({id: newUser._id , fullName, email }, SECRET, { expiresIn: "1d" });
 
     const response = NextResponse.json({
       message: "Welcome To Velvorn",
       status: 200,
+      token,
       user: {
         fullName,
         email
@@ -51,7 +60,7 @@ export async function POST(req: Request) {
 
     response.cookies.set("token", token, {
       httpOnly: true,
-      secure: true,
+      secure: process.env.NODE_ENV === "production", //true
       sameSite: "strict",
       path: "/",
     });

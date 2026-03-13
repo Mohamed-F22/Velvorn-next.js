@@ -42,6 +42,7 @@ export async function POST(req: Request) {
 
     const token = jwt.sign(
       {
+        id: findUser._id,
         email: findUser.email,
         fullName: findUser.fullName,
       },
@@ -61,7 +62,7 @@ export async function POST(req: Request) {
 
     response.cookies.set("token", token, {
       httpOnly: true,
-      secure: true,
+      secure: process.env.NODE_ENV === "production", //true
       sameSite: "strict",
       path: "/",
     });
