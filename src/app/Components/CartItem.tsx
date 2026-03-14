@@ -110,6 +110,9 @@ const CartItem = (params: { item: item }) => {
           >
             <IconButton
               onClick={() => {
+                if (item.quantity - 1 < 1) {
+                  return
+                }
                 updateItemInCart(
                   item._id,
                   item.selectedSize,
