@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { useCartStore } from "./CartState";
 
 interface User {
   fullName?: string;
@@ -83,6 +84,7 @@ export const useAuthStore = create<AuthState>((set) => ({
       }
     } finally {
       set({ user: null });
+      useCartStore.getState().clearCart();
     }
   },
 }));

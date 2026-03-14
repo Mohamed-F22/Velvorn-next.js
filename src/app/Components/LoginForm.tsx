@@ -6,6 +6,7 @@ import { useAuthStore } from "../Zustand/AuthStore";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { Alert } from "./Alert";
+import { useCartStore } from "../Zustand/CartState";
 
 type LoginInputs = {
   email: string;
@@ -20,10 +21,9 @@ export default function LoginForm() {
     reset,
   } = useForm<LoginInputs>();
   const login = useAuthStore((state) => state.login);
+  const user = useAuthStore((state) => state.user);
 
   const router = useRouter();
-
-  const user = useAuthStore((state) => state.user);
 
   useEffect(() => {
     if (user) {
@@ -34,6 +34,7 @@ export default function LoginForm() {
   const onSubmit = async (data: LoginInputs) => {
     try {
       const result = await login(data);
+
       if (result.status === 401) {
         Alert.fire({
           icon: "error",
@@ -41,10 +42,20 @@ export default function LoginForm() {
         });
         return;
       }
+
       Alert.fire({
         icon: "success",
         title: result.message,
       });
+
+      const { cartItems } = useCartStore.getState();
+
+      if (cartItems.length > 0) {
+        await useCartStore.getState().syncCartWithServer();
+      } else {
+        await useCartStore.getState().fetchUserCart();
+      }
+
       router.push("/");
       reset();
     } catch (err: any) {

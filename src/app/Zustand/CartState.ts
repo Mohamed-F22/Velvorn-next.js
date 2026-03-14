@@ -1,7 +1,9 @@
 import { create } from "zustand";
 import { getProduct } from "../lib/actions";
 import { Alert } from "../Components/Alert";
-import { persist, createJSONStorage } from "zustand/middleware"; // أضف هذا السطر
+import { persist, createJSONStorage } from "zustand/middleware";
+import { useAuthStore } from "./AuthStore";
+import CartItem from "../Components/CartItem";
 
 interface Product {
   _id: string;
@@ -20,6 +22,8 @@ interface CartItem extends Product {
 
 interface CartState {
   cartItems: CartItem[];
+  isUserLoggedIn: () => boolean;
+  syncCartWithServer: () => void;
   addItemToCart: (id: string, size: string, quantity: number) => void;
   updateItemInCart: (
     id: string,
@@ -31,168 +35,198 @@ interface CartState {
   clearCart: () => void;
   getTotalAmount: () => number;
   getCartCount: () => number;
+  fetchUserCart: () => void;
 }
 
 export const useCartStore = create<CartState>()(
   persist(
     (set, get) => ({
       cartItems: [],
+      isUserLoggedIn: () => !!useAuthStore.getState().user,
 
-      addItemToCart: async (id, size, quantity) => {
+      fetchUserCart: async () => {
         try {
-          const { cartItems } = get();
+          const res = await fetch("/api/cart/get");
+          if (res.ok) {
+            const result = await res.json();
 
-          if (quantity <= 0) {
-            console.log("Invalid quantity");
-            return;
-          }
-
-          const existingItem = cartItems.find(
-            (item) => item._id === id && item.selectedSize === size,
-          );
-          const product = await getProduct(id);
-
-          if (!product) {
-            console.log("Product not Found!");
-            return;
-          }
-
-          if (existingItem) {
-            const providedQuantity = product.stock[size.toLowerCase()];
-
-            if (existingItem.quantity + quantity > providedQuantity) {
-              Alert.fire({
-                icon: "info",
-                title: "Reached maximum stock of this size!",
+            if (result.cart && result.cart.items) {
+              const mappedItems = result.cart.items.map((item: any) => {
+                return {
+                  ...item.product,
+                  quantity: item.quantity,
+                  selectedSize: item.size,
+                  _id: item.product._id,
+                };
               });
-              set({
-                cartItems: cartItems.map((item) =>
-                  item._id === id && item.selectedSize === size
-                    ? { ...item, quantity: providedQuantity }
-                    : item,
-                ),
-              });
-              return;
+
+              set({ cartItems: mappedItems });
             }
-
-            set({
-              cartItems: cartItems.map((item) =>
-                item._id === id && item.selectedSize === size
-                  ? { ...item, quantity: item.quantity + quantity }
-                  : item,
-              ),
-            });
-          } else {
-            const providedQuantity = product.stock[size.toLowerCase()];
-
-            if (providedQuantity < 1) {
-              Alert.fire({
-                icon: "info",
-                title: "Item is out of stock!",
-              });
-              return;
-            }
-            set({
-              cartItems: [
-                ...cartItems,
-                {
-                  ...product,
-                  quantity: quantity,
-                  selectedSize: size,
-                },
-              ],
-            });
           }
         } catch (err) {
-          console.error("Add to cart failed", err);
+          console.error("Fetch Cart Failed", err);
+        }
+      },
+
+      syncCartWithServer: async () => {
+        const { cartItems } = get();
+        if (cartItems.length === 0) return;
+
+        try {
+          const localItems = cartItems.map((item) => ({
+            product: item._id,
+            quantity: item.quantity,
+            size: item.selectedSize,
+            unitPrice: item.offerPrice || item.price,
+          }));
+
+          const res = await fetch("/api/cart/merge", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ localItems }),
+          });
+
+          if (res.ok) {
+            const result = await res.json();
+
+            if (result.cart && result.cart.items) {
+              const mappedItems = result.cart.items.map((item: any) => {
+                return {
+                  ...item.product,
+                  quantity: item.quantity,
+                  selectedSize: item.size,
+                  _id: item.product._id,
+                };
+              });
+
+              set({ cartItems: mappedItems });
+            }
+          }
+        } catch (err) {
+          console.error("Sync Cart Failed", err);
+        }
+      },
+
+      addItemToCart: async (id, size, quantity) => {
+        const { cartItems, isUserLoggedIn } = get();
+        const product = await getProduct(id);
+        if (!product) return;
+
+        if (isUserLoggedIn()) {
+          try {
+            await fetch("/api/cart/add", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                productId: id,
+                quantity,
+                unitPrice: product.offerPrice || product.price,
+                size,
+              }),
+            });
+          } catch (err) {
+            console.error("DB Add Failed", err);
+          }
+        }
+
+        const existingItem = cartItems.find(
+          (item) => item._id === id && item.selectedSize === size,
+        );
+        const providedStock = product.stock[size.toLowerCase()];
+
+        if (existingItem) {
+          const newQty = Math.min(
+            existingItem.quantity + quantity,
+            providedStock,
+          );
+          if (existingItem.quantity + quantity > providedStock) {
+            Alert.fire({ icon: "info", title: "Reached maximum stock!" });
+          }
+          set({
+            cartItems: cartItems.map((item) =>
+              item._id === id && item.selectedSize === size
+                ? { ...item, quantity: newQty }
+                : item,
+            ),
+          });
+        } else {
+          if (providedStock < 1) {
+            Alert.fire({ icon: "info", title: "Out of stock!" });
+            return;
+          }
+          set({
+            cartItems: [
+              ...cartItems,
+              { ...product, quantity, selectedSize: size },
+            ],
+          });
         }
       },
 
       updateItemInCart: async (id, currentSize, newQuantity, newSize) => {
-        try {
-          const { cartItems } = get();
-          const targetSize = newSize || currentSize;
+        const { cartItems, isUserLoggedIn } = get();
+        const targetSize = newSize || currentSize;
 
-          const product = await getProduct(id);
-          if (!product) {
-            console.log("Product not Found!");
-            return;
+        if (isUserLoggedIn()) {
+          try {
+            await fetch("/api/cart/update", {
+              method: "PATCH",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                productId: id,
+                size: targetSize,
+                quantity: newQuantity,
+              }),
+            });
+          } catch (err) {
+            console.error("DB Update Failed", err);
           }
-
-          if (newQuantity < 1) {
-            console.log("Invalid quantity");
-            return;
-          }
-
-          const availableStock = product.stock[targetSize.toLowerCase()];
-          if (availableStock < newQuantity) {
-            console.log("Requested quantity exceeds stock");
-            return;
-          }
-
-          const existingItemInTargetSize = cartItems.find(
-            (item) =>
-              item._id === id &&
-              item.selectedSize === targetSize &&
-              targetSize !== currentSize,
-          );
-
-          if (existingItemInTargetSize) {
-            const updatedCart = cartItems
-              .map((item) => {
-                if (item._id === id && item.selectedSize === targetSize) {
-                  const totalQuantity = item.quantity + newQuantity;
-                  if (totalQuantity > availableStock) {
-                    console.log("Maximum quantity reached!");
-                    return { ...item, quantity: availableStock };
-                  }
-                  return { ...item, quantity: totalQuantity };
-                }
-                return item;
-              })
-              .filter(
-                (item) =>
-                  !(item._id === id && item.selectedSize === currentSize),
-              );
-
-            set({ cartItems: updatedCart });
-          } else {
-            const updatedCart = cartItems.map((item) =>
-              item._id === id && item.selectedSize === currentSize
-                ? { ...item, quantity: newQuantity, selectedSize: targetSize }
-                : item,
-            );
-
-            set({ cartItems: updatedCart });
-          }
-        } catch (err) {
-          console.error("Update cart failed", err);
         }
+
+        // تحديث الـ UI (نفس الـ Logic القديم الخاص بك)
+        const updatedItems = cartItems.map((item) =>
+          item._id === id && item.selectedSize === currentSize
+            ? { ...item, quantity: newQuantity, selectedSize: targetSize }
+            : item,
+        );
+        set({ cartItems: updatedItems });
       },
 
-      removeItemFromCart: (id, size) => {
-        try {
-          if (!id || !size) return;
+      removeItemFromCart: async (id, size) => {
+        const { isUserLoggedIn } = get();
 
-          set((state) => ({
-            cartItems: state.cartItems.filter(
-              (item) => !(item._id === id && item.selectedSize === size),
-            ),
-          }));
-        } catch (err) {
-          console.error("Remove Item failed", err);
+        if (isUserLoggedIn()) {
+          try {
+            await fetch("/api/cart/delete", {
+              method: "DELETE",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ productId: id, size }),
+            });
+          } catch (err) {
+            console.error("DB Remove Failed", err);
+          }
         }
+
+        set((state) => ({
+          cartItems: state.cartItems.filter(
+            (item) => !(item._id === id && item.selectedSize === size),
+          ),
+        }));
       },
 
-      clearCart: () => {
+      clearCart: async () => {
+        const { isUserLoggedIn } = get();
+        if (isUserLoggedIn()) {
+          await fetch("/api/cart/clear", { method: "PUT" });
+        }
         set({ cartItems: [] });
       },
 
       getTotalAmount: () => {
         const { cartItems } = get();
         return cartItems.reduce((total, item) => {
-          const priceToUse = item.offerPrice || item.price;
-          return total + priceToUse * item.quantity;
+          const price = item.offerPrice || item.price;
+          return total + price * item.quantity;
         }, 0);
       },
 

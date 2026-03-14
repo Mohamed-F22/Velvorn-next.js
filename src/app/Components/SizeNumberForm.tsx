@@ -20,7 +20,7 @@ const SizeNumberForm = (params: { stock: stock; productId: string }) => {
   const sizes = ["XS", "SM", "MD", "LG", "XL"];
 
   const handleAddItemToCart = () => {
-    addItemToCart(params.productId, size, quantity);
+    addItemToCart(params.productId, size.toLowerCase() as string , quantity);
   };
 
   return (

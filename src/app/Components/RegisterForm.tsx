@@ -6,6 +6,7 @@ import { useAuthStore } from "../Zustand/AuthStore";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { Alert } from "./Alert";
+import { useCartStore } from "../Zustand/CartState";
 
 type RegisterInputs = {
   fullName: string;
@@ -42,10 +43,18 @@ export default function RegisterForm() {
         });
         return;
       }
+
       Alert.fire({
         icon: "success",
         title: result.message,
       });
+
+      const { cartItems } = useCartStore.getState();
+
+      if (cartItems.length > 0) {
+        await useCartStore.getState().syncCartWithServer();
+      }
+
       router.push("/");
       reset();
     } catch (err: any) {
