@@ -4,12 +4,15 @@ import cartModel from "@/app/models/cartModel";
 import productModel from "@/app/models/ProductModel";
 import jwt from "jsonwebtoken";
 import { cookies } from "next/headers";
+import { RequestLog } from "@/app/models/RequestLog";
 
 const SECRET = process.env.SECRET_JWT as string;
 
-export async function GET() {
+export async function GET(req: Request) {
   try {
     await dbConnect();
+
+    const idempotencyKey = req.headers.get("x-idempotency-key");
 
     const cookieStore = await cookies();
     const token = cookieStore.get("token")?.value;
@@ -20,6 +23,20 @@ export async function GET() {
 
     const decoded = jwt.verify(token, SECRET) as { id: string };
     const userId = decoded.id;
+
+    if (idempotencyKey) {
+      try {
+        await RequestLog.create({ key: idempotencyKey });
+      } catch (err: any) {
+        if (err.code === 11000) {
+          return NextResponse.json(
+            { message: "Request already processed" },
+            { status: 200 },
+          );
+        }
+        throw err;
+      }
+    }
 
     const cart = await cartModel
       .findOne({ userId, status: "active" })

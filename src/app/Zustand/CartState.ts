@@ -4,6 +4,7 @@ import { Alert } from "../Components/Alert";
 import { persist, createJSONStorage } from "zustand/middleware";
 import { useAuthStore } from "./AuthStore";
 import CartItem from "../Components/CartItem";
+import { v4 as uuidv4 } from "uuid";
 
 interface Product {
   _id: string;
@@ -37,6 +38,7 @@ interface CartState {
   getCartCount: () => number;
   fetchUserCart: () => void;
 }
+const idempotencyKey = uuidv4();
 
 export const useCartStore = create<CartState>()(
   persist(
@@ -46,7 +48,11 @@ export const useCartStore = create<CartState>()(
 
       fetchUserCart: async () => {
         try {
-          const res = await fetch("/api/cart/get");
+          const res = await fetch("/api/cart/get", {
+            headers: {
+              "X-Idempotency-Key": idempotencyKey,
+            },
+          });
           if (res.ok) {
             const result = await res.json();
 
@@ -82,7 +88,10 @@ export const useCartStore = create<CartState>()(
 
           const res = await fetch("/api/cart/merge", {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            headers: {
+              "Content-Type": "application/json",
+              "X-Idempotency-Key": idempotencyKey,
+            },
             body: JSON.stringify({ localItems }),
           });
 

@@ -47,6 +47,7 @@ export default function LoginForm() {
         icon: "success",
         title: result.message,
       });
+      router.push("/");
 
       const { cartItems } = useCartStore.getState();
 
@@ -56,7 +57,6 @@ export default function LoginForm() {
         await useCartStore.getState().fetchUserCart();
       }
 
-      router.push("/");
       reset();
     } catch (err: any) {
       alert(err.message);

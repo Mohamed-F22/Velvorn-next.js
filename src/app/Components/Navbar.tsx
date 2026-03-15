@@ -106,19 +106,24 @@ function Navbar() {
             </IconButton>
             <Box sx={{ display: { xs: "block" } }}>
               {user ? (
-                <IconButton
-                  size="large"
+                <button
                   aria-label="account of current user"
                   aria-controls="menu-appbar"
                   aria-haspopup="true"
                   onClick={handleOpenNavMenu}
-                  color="inherit"
-                  sx={{ color: "#222" }}
+                  style={{
+                    width: "30px",
+                    height: "30px",
+                    backgroundColor: "#1976d2",
+                    borderRadius: "50%",
+                    border: "none",
+                    color: "white",
+                    cursor: "pointer",
+                    margin: "5px",
+                  }}
                 >
-                  <PersonIcon
-                    sx={{ fontSize: { xs: "1.2rem", md: "1.5rem" } }}
-                  />
-                </IconButton>
+                  {user.fullName?.charAt(0)}
+                </button>
               ) : (
                 <IconButton
                   size="large"
@@ -254,19 +259,24 @@ function Navbar() {
               </IconButton>
               <Box sx={{ display: { xs: "block" } }}>
                 {user ? (
-                  <IconButton
-                    size="large"
+                  <button
                     aria-label="account of current user"
                     aria-controls="menu-appbar"
                     aria-haspopup="true"
                     onClick={handleOpenNavMenu}
-                    color="inherit"
-                    sx={{ color: "#222" }}
+                    style={{
+                      width: "25px",
+                      height: "25px",
+                      backgroundColor: "#1976d2",
+                      borderRadius: "50%",
+                      border: "none",
+                      color: "white",
+                      cursor: "pointer",
+                      margin: "5px",
+                    }}
                   >
-                    <PersonIcon
-                      sx={{ fontSize: { xs: "1.2rem", md: "1.5rem" } }}
-                    />
-                  </IconButton>
+                    {user.fullName?.charAt(0)}
+                  </button>
                 ) : (
                   <IconButton
                     size="large"

@@ -30,6 +30,7 @@ const CartItem = (params: { item: item }) => {
       borderColor={"#a7a7a7ff"}
       pb={1}
       sx={{
+        overflow: "hidden",
         gap: {
           xs: 1,
           sm: 2,
