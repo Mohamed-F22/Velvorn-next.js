@@ -1,24 +1,31 @@
 "use client";
-import AppBar from "@mui/material/AppBar";
-import Box from "@mui/material/Box";
-import Toolbar from "@mui/material/Toolbar";
-import IconButton from "@mui/material/IconButton";
-import Typography from "@mui/material/Typography";
-import Menu from "@mui/material/Menu";
+import { MouseEvent, useState } from "react";
+import { useRouter } from "next/navigation";
+import {
+  AppBar,
+  Box,
+  Toolbar,
+  IconButton,
+  Typography,
+  Menu,
+  Container,
+  Button,
+  MenuItem,
+  Avatar,
+  Badge,
+  badgeClasses,
+  Divider,
+  styled,
+} from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
-import Container from "@mui/material/Container";
-import Button from "@mui/material/Button";
-import MenuItem from "@mui/material/MenuItem";
 import CardGiftcardIcon from "@mui/icons-material/CardGiftcard";
 import SearchIcon from "@mui/icons-material/Search";
-import { useRender } from "../Context/visibility/RenderContext";
-import { Badge, badgeClasses } from "@mui/material";
-import styled from "@emotion/styled";
-import { useCartStore } from "@/app/Zustand/CartState";
-import { MouseEvent, useState } from "react";
-import { useAuthStore } from "../Zustand/AuthStore";
 import PersonIcon from "@mui/icons-material/Person";
-import { useRouter } from "next/navigation";
+
+import { useRender } from "../Context/visibility/RenderContext";
+import { useCartStore } from "@/app/Zustand/CartState";
+import { useAuthStore } from "../Zustand/AuthStore";
+
 const CartBadge = styled(Badge)`
   & .${badgeClasses.badge} {
     top: -8px;
@@ -29,29 +36,28 @@ const CartBadge = styled(Badge)`
 function Navbar() {
   const user = useAuthStore((state) => state.user);
   const logout = useAuthStore((state) => state.logout);
-
   const { getCartCount } = useCartStore();
   const { overlayOn } = useRender();
-
   const router = useRouter();
 
   const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null);
+  const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
 
-  const handleOpenNavMenu = (event: MouseEvent<HTMLElement>) => {
+  const handleOpenNavMenu = (event: MouseEvent<HTMLElement>) =>
     setAnchorElNav(event.currentTarget);
-  };
+  const handleCloseNavMenu = () => setAnchorElNav(null);
 
-  const handleCloseNavMenu = () => {
-    setAnchorElNav(null);
-  };
+  const handleOpenUserMenu = (event: MouseEvent<HTMLElement>) =>
+    setAnchorElUser(event.currentTarget);
+  const handleCloseUserMenu = () => setAnchorElUser(null);
 
   const handleCart = () => {
     const cart = document.getElementById("cart");
-    if (cart?.classList.contains("active-cart")) {
-      cart.classList.remove("active-cart");
-    } else cart?.classList.add("active-cart");
+    cart?.classList.toggle("active-cart");
     overlayOn();
   };
+
+  const navPages = ["Women", "Men", "Categories"];
 
   return (
     <AppBar
@@ -65,281 +71,152 @@ function Navbar() {
     >
       <Container>
         <Toolbar disableGutters>
+          {/* LOGO - Desktop */}
           <Typography
             variant="h6"
             noWrap
-            component="a"
-            href="/"
+            onClick={() => router.push("/")}
             sx={{
-              mr: 10,
+              mr: 4,
               display: { xs: "none", md: "flex" },
-              fontFamily: "monospace",
               fontWeight: 700,
+              cursor: "pointer",
               letterSpacing: ".3rem",
               color: "inherit",
-              textDecoration: "none",
+              fontFamily: "monospace",
+              fontSize: { xs: "1.2rem", sm: "1.5rem" },
             }}
           >
             VELVORN
           </Typography>
-          <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
-            {" "}
-            <Button sx={{ my: 2, color: "black", display: "block" }}>
-              Women
-            </Button>
-            <Button sx={{ my: 2, color: "black", display: "block" }}>
-              Men
-            </Button>
-            <Button sx={{ my: 2, color: "black", display: "block" }}>
-              Categories
-            </Button>
-          </Box>
-          <Box
-            sx={{
-              flexGrow: 0,
-              display: { xs: "none", md: "flex" },
-              alignItems: "center",
-            }}
-          >
-            <IconButton sx={{ color: "#222" }}>
-              <SearchIcon sx={{ fontSize: { xs: "1.2rem", md: "1.5rem" } }} />
-            </IconButton>
-            <Box sx={{ display: { xs: "block" } }}>
-              {user ? (
-                <button
-                  aria-label="account of current user"
-                  aria-controls="menu-appbar"
-                  aria-haspopup="true"
-                  onClick={handleOpenNavMenu}
-                  style={{
-                    width: "30px",
-                    height: "30px",
-                    backgroundColor: "#1976d2",
-                    borderRadius: "50%",
-                    border: "none",
-                    color: "white",
-                    cursor: "pointer",
-                    margin: "5px",
-                  }}
-                >
-                  {user.fullName?.charAt(0)}
-                </button>
-              ) : (
-                <IconButton
-                  size="large"
-                  aria-label="account of current user"
-                  aria-controls="menu-appbar"
-                  aria-haspopup="true"
-                  onClick={() => router.push("/login")}
-                  color="inherit"
-                  sx={{ color: "#222" }}
-                >
-                  <PersonIcon
-                    sx={{ fontSize: { xs: "1.2rem", md: "1.5rem" } }}
-                  />
-                </IconButton>
-              )}
 
-              <Menu
-                id="menu-appbar"
-                anchorEl={anchorElNav}
-                anchorOrigin={{
-                  vertical: "bottom",
-                  horizontal: "left",
-                }}
-                keepMounted
-                transformOrigin={{
-                  vertical: "top",
-                  horizontal: "left",
-                }}
-                open={Boolean(anchorElNav)}
-                onClose={handleCloseNavMenu}
-                onClick={handleCloseNavMenu}
-                sx={{ display: { xs: "block" } }}
-              >
-                <MenuItem>
-                  <Typography>Hello, {user?.fullName}.</Typography>
-                </MenuItem>
-                <MenuItem>
-                  <Typography>Profile</Typography>
-                </MenuItem>
-                <MenuItem
-                  onClick={async () => {
-                    await logout();
-                  }}
-                >
-                  <Typography color="error">Logout</Typography>
-                </MenuItem>{" "}
-              </Menu>
-            </Box>
-            <IconButton onClick={handleCart} sx={{ color: "#222" }}>
-              <CardGiftcardIcon
-                sx={{ fontSize: { xs: "1.2rem", md: "1.5rem" } }}
-              />
-              <CartBadge
-                badgeContent={getCartCount()}
-                color="primary"
-                overlap="circular"
-              />
+          {/* Mobile Menu Icon */}
+          <Box sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}>
+            <IconButton
+              size="large"
+              onClick={handleOpenNavMenu}
+              color="inherit"
+            >
+              <MenuIcon />
             </IconButton>
+            <Menu
+              anchorEl={anchorElNav}
+              open={Boolean(anchorElNav)}
+              onClose={handleCloseNavMenu}
+              sx={{ display: { xs: "block", md: "none" } }}
+            >
+              {navPages.map((page) => (
+                <MenuItem key={page} onClick={handleCloseNavMenu}>
+                  <Typography textAlign="center">{page}</Typography>
+                </MenuItem>
+              ))}
+            </Menu>
           </Box>
-          {/* small */}
-          <Box
+
+          {/* LOGO - Mobile */}
+          <Typography
+            variant="h5"
+            noWrap
+            onClick={() => router.push("/")}
             sx={{
+              flexGrow: 1,
               display: { xs: "flex", md: "none" },
-              alignItems: "center",
-              justifyContent: "space-between",
-              width: "100%",
+              fontWeight: 700,
+              cursor: "pointer",
+              letterSpacing: ".3rem",
+              color: "inherit",
+              fontFamily: "monospace",
+              fontSize: { xs: "1.2rem", sm: "1.5rem" },
             }}
           >
-            <Box sx={{ flexGrow: 1, display: { xs: "flex" } }}>
+            VELVORN
+          </Typography>
+
+          {/* Desktop Links */}
+          <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
+            {navPages.map((page) => (
+              <Button
+                key={page}
+                sx={{ my: 2, color: "black", display: "block" }}
+              >
+                {page}
+              </Button>
+            ))}
+          </Box>
+
+          {/* Right Icons (Search, User, Cart) */}
+          <Box sx={{ flexGrow: 0, display: "flex", alignItems: "center" }}>
+            <IconButton sx={{ color: "#222" }}>
+              <SearchIcon />
+            </IconButton>
+
+            {user ? (
+              <Avatar
+                onClick={handleOpenUserMenu}
+                sx={{
+                  bgcolor: "#1976d2",
+                  width: 30,
+                  height: 30,
+                  fontSize: "small",
+                  mx: 1,
+                  cursor: "pointer",
+                }}
+              >
+                {user.fullName?.charAt(0)}
+              </Avatar>
+            ) : (
               <IconButton
-                size="large"
-                aria-label="account of current user"
-                aria-controls="menu-appbar"
-                aria-haspopup="true"
-                onClick={handleOpenNavMenu}
-                color="inherit"
+                onClick={() => router.push("/login")}
+                sx={{ color: "#222" }}
               >
-                <MenuIcon />
+                <PersonIcon />
               </IconButton>
-              <Menu
-                id="menu-appbar"
-                anchorEl={anchorElNav}
-                anchorOrigin={{
-                  vertical: "bottom",
-                  horizontal: "left",
-                }}
-                keepMounted
-                transformOrigin={{
-                  vertical: "top",
-                  horizontal: "left",
-                }}
-                open={Boolean(anchorElNav)}
-                onClose={handleCloseNavMenu}
-                onClick={handleCloseNavMenu}
-                sx={{ display: { xs: "block", md: "none" } }}
-              >
-                <MenuItem>
-                  <Typography sx={{ textAlign: "center" }}>Women</Typography>
-                </MenuItem>
-                <MenuItem>
-                  <Typography sx={{ textAlign: "center" }}>Men</Typography>
-                </MenuItem>
-                <MenuItem>
-                  <Typography sx={{ textAlign: "center" }}>
-                    Categories
-                  </Typography>
-                </MenuItem>
-              </Menu>
+            )}
+
+            <IconButton onClick={handleCart} sx={{ color: "#222" }}>
+              <CartBadge badgeContent={getCartCount()} color="primary">
+                <CardGiftcardIcon />
+              </CartBadge>
+            </IconButton>
+          </Box>
+
+          {/* Common User Menu (Rendered Once) */}
+          <Menu
+            anchorEl={anchorElUser}
+            open={Boolean(anchorElUser)}
+            onClose={handleCloseUserMenu}
+            PaperProps={{ sx: { width: 220, mt: "7px" } }}
+          >
+            <Box sx={{ p: 2, display: "flex", alignItems: "center", gap: 1 }}>
+              <Avatar sx={{ bgcolor: "#1976d2" }}>
+                {user?.fullName?.charAt(0)}
+              </Avatar>
+              <Box>
+                <Typography variant="subtitle2">{user?.fullName}</Typography>
+                <Typography
+                  variant="caption"
+                  color="primary"
+                  sx={{ cursor: "pointer" }}
+                >
+                  View Profile
+                </Typography>
+              </Box>
             </Box>
-            <Typography
-              variant="h5"
-              noWrap
-              component="a"
-              href="#app-bar-with-responsive-menu"
-              sx={{
-                mr: 2,
-                display: { xs: "flex" },
-                flexGrow: 1,
-                fontFamily: "monospace",
-                fontWeight: 700,
-                letterSpacing: ".3rem",
-                color: "inherit",
-                textDecoration: "none",
-                fontSize: { xs: "1.2rem", sm: "1.5rem" },
+            <Divider />
+            <MenuItem onClick={handleCloseUserMenu}>My Orders</MenuItem>
+            <MenuItem
+              onClick={() => {
+                logout();
+                handleCloseUserMenu();
               }}
             >
-              Velvorn
-            </Typography>
-            <Box sx={{ flexGrow: 0, display: " flex", alignItems: "center" }}>
-              {" "}
-              <IconButton sx={{ color: "#222" }}>
-                <SearchIcon sx={{ fontSize: { xs: "1.2rem", md: "1.5rem" } }} />
-              </IconButton>
-              <Box sx={{ display: { xs: "block" } }}>
-                {user ? (
-                  <button
-                    aria-label="account of current user"
-                    aria-controls="menu-appbar"
-                    aria-haspopup="true"
-                    onClick={handleOpenNavMenu}
-                    style={{
-                      width: "25px",
-                      height: "25px",
-                      backgroundColor: "#1976d2",
-                      borderRadius: "50%",
-                      border: "none",
-                      color: "white",
-                      cursor: "pointer",
-                      margin: "5px",
-                    }}
-                  >
-                    {user.fullName?.charAt(0)}
-                  </button>
-                ) : (
-                  <IconButton
-                    size="large"
-                    aria-label="account of current user"
-                    aria-controls="menu-appbar"
-                    aria-haspopup="true"
-                    onClick={() => router.push("/login")}
-                    color="inherit"
-                    sx={{ color: "#222" }}
-                  >
-                    <PersonIcon
-                      sx={{ fontSize: { xs: "1.2rem", md: "1.5rem" } }}
-                    />
-                  </IconButton>
-                )}
-
-                <Menu
-                  id="menu-appbar"
-                  anchorEl={anchorElNav}
-                  anchorOrigin={{
-                    vertical: "bottom",
-                    horizontal: "left",
-                  }}
-                  keepMounted
-                  transformOrigin={{
-                    vertical: "top",
-                    horizontal: "left",
-                  }}
-                  open={Boolean(anchorElNav)}
-                  onClose={handleCloseNavMenu}
-                  onClick={handleCloseNavMenu}
-                  sx={{ display: { xs: "block" } }}
-                >
-                  <MenuItem>
-                    <Typography>Hello, {user?.fullName}.</Typography>
-                  </MenuItem>
-                  <MenuItem>
-                    <Typography>Profile</Typography>
-                  </MenuItem>
-                  <MenuItem
-                    onClick={async () => {
-                      await logout();
-                    }}
-                  >
-                    <Typography color="error">Logout</Typography>
-                  </MenuItem>{" "}
-                </Menu>
-              </Box>
-              <IconButton onClick={handleCart} sx={{ color: "#222" }}>
-                <CardGiftcardIcon
-                  sx={{ fontSize: { xs: "1.2rem", md: "1.5rem" } }}
-                />
-                <CartBadge
-                  badgeContent={getCartCount()}
-                  color="primary"
-                  overlap="circular"
-                />
-              </IconButton>
-            </Box>
-          </Box>
+              <Typography color="error">Logout</Typography>
+            </MenuItem>
+          </Menu>
         </Toolbar>
       </Container>
     </AppBar>
   );
 }
+
 export default Navbar;
