@@ -75,7 +75,7 @@ export default function RegisterForm() {
         component="form"
         onSubmit={handleSubmit(onSubmit)}
         sx={{
-          width: { xs: "85%", sm: "60%", md: "30%" },
+          width: { xs: "70%", sm: "60%", md: "30%" },
           position: "absolute",
           top: "50%",
           left: "50%",
