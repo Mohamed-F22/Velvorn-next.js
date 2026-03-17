@@ -26,6 +26,7 @@
     "react-dom": "19.2.3",
     "react-hook-form": "^7.71.2",
     "sweetalert2": "^11.26.21",
+    "use-debounce": "^10.1.0",
     "uuid": "^13.0.0",
     "zustand": "^5.0.11"
   },
