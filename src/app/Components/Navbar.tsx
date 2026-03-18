@@ -360,11 +360,15 @@ function Navbar() {
                   <PersonIcon />
                 </IconButton>
               )}
-
               <IconButton onClick={handleCart} sx={{ color: "#222" }}>
-                <CartBadge badgeContent={getCartCount()} color="primary">
-                  <CardGiftcardIcon />
-                </CartBadge>
+                <CardGiftcardIcon
+                  sx={{ fontSize: { xs: "1.2rem", md: "1.5rem" } }}
+                />
+                <CartBadge
+                  badgeContent={getCartCount()}
+                  color="primary"
+                  overlap="circular"
+                />
               </IconButton>
             </Box>
           )}
