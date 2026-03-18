@@ -43,7 +43,7 @@ export async function GET(req: Request) {
       .populate({
         path: "items.product",
         model: productModel,
-        select: "title imgs price offerPrice stock desc",
+        select: "title imgs price offerPrice stock",
       });
 
     if (!cart) {

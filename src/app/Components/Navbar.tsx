@@ -17,7 +17,6 @@ import {
   Divider,
   styled,
   InputBase,
-  alpha,
   List,
   ListItem,
   ListItemButton,
@@ -29,7 +28,6 @@ import MenuIcon from "@mui/icons-material/Menu";
 import CardGiftcardIcon from "@mui/icons-material/CardGiftcard";
 import SearchIcon from "@mui/icons-material/Search";
 import PersonIcon from "@mui/icons-material/Person";
-
 import { useRender } from "../Context/visibility/RenderContext";
 import { useCartStore } from "@/app/Zustand/CartState";
 import { useAuthStore } from "../Zustand/AuthStore";

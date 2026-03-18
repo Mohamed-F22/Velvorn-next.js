@@ -13,7 +13,6 @@ interface item {
   price: number;
   offerPrice: number | null;
   stock: { xs: number; sm: number; md: number; lg: number; xl: number };
-  desc: string;
   quantity: number;
   selectedSize: string;
 }

@@ -9,7 +9,7 @@ const ProductCard = (params: { product: Product }) => {
     <Link style={{ textDecoration: "none" }} href={`/${product._id}`}>
       <Box
         className="product-card"
-        sx={{ position: "relative", overflow: "hidden" }}
+        sx={{ position: "relative", overflow: "hidden",aspectRatio: "4 / 5", }}
       >
         <Image
           src={product.imgs[0]}

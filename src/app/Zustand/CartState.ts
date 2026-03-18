@@ -13,7 +13,6 @@ interface Product {
   price: number;
   offerPrice: number | null;
   stock: { xs: number; sm: number; md: number; lg: number; xl: number };
-  desc: string;
 }
 
 interface CartItem extends Product {

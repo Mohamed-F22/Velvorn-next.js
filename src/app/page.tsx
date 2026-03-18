@@ -1,12 +1,11 @@
 export const dynamic = "force-dynamic";
 
 import { getProducts } from "@/app/lib/actions";
-import Footer from "./Components/Footer";
-import HeroSection from "./Components/HeroSection";
 import Landing from "./Components/Landing";
 import LatestDrop from "./Components/LatestDrop";
 import OffersSection from "./Components/OffersSection";
 import SportsWearCollection from "./Components/SportsWearCollection";
+import HeroSection from "./Components/HeroSection";
 
 const Home = async () => {
   const productsData = await getProducts();
@@ -19,7 +18,6 @@ const Home = async () => {
       <SportsWearCollection />
       <LatestDrop latestDrop={latestDrop} />
       <HeroSection />
-      <Footer />
     </>
   );
 };

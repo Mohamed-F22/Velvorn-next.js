@@ -2,7 +2,6 @@
 import { Box, Container, IconButton, Stack, Typography } from "@mui/material";
 import Button from "@mui/material/Button";
 import CloseIcon from "@mui/icons-material/Close";
-import DeleteIcon from "@mui/icons-material/Delete";
 import { useRender } from "../Context/visibility/RenderContext";
 import Swal from "sweetalert2";
 import { useCartStore } from "@/app/Zustand/CartState";

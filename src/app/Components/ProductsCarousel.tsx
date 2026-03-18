@@ -21,14 +21,20 @@ const ProductsCarousel = ({ products }: { products: Product[] }) => {
         hasTrack={false}
         options={{
           gap: "1rem",
-          focus: "center",
-          type: "loop",
+          focus: "left",
+          perMove: 1,
           pagination: false,
           arrows: true,
-          updateOnMove: true,
+          omitEnd: true,
         }}
       >
-        <Box className="custom-wrapper" sx={{ position: "relative", overflow: { xs: "hidden" , md: "visible"} }}>
+        <Box
+          className="custom-wrapper"
+          sx={{
+            position: "relative",
+            overflow: { xs: "hidden", md: "visible" },
+          }}
+        >
           <SplideTrack>
             {products.map((product, index) => (
               <SplideSlide

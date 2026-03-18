@@ -6,6 +6,8 @@ import { dbConnect } from "./mongodb";
 export interface Product {
   _id: string;
   title: string;
+  category: string;
+  style: string[]
   imgs: string[];
   price: number;
   offerPrice: number | null;
