@@ -10,7 +10,6 @@ export async function PATCH(req: Request) {
   try {
     await dbConnect();
 
-    // 1. التحقق من التوكن
     const cookieStore = await cookies();
     const token = cookieStore.get("token")?.value;
 
