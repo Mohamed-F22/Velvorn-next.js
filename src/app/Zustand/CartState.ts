@@ -25,12 +25,8 @@ interface CartState {
   isUserLoggedIn: () => boolean;
   syncCartWithServer: () => void;
   addItemToCart: (id: string, size: string, quantity: number) => void;
-  updateItemInCart: (
-    id: string,
-    currentSize: string,
-    newQuantity: number,
-    newSize?: string,
-  ) => void;
+  updateItemInCart: (id: string, size: string, newQuantity: number) => void;
+  updateLocalQuantity: (id: string, size: string, quantity: number) => void;
   removeItemFromCart: (id: string, size: string) => void;
   clearCart: () => void;
   getTotalAmount: () => number;
@@ -122,7 +118,7 @@ export const useCartStore = create<CartState>()(
 
         if (isUserLoggedIn()) {
           try {
-            await fetch("/api/cart/add", {
+            const res = await fetch("/api/cart/add", {
               method: "POST",
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({
@@ -132,72 +128,104 @@ export const useCartStore = create<CartState>()(
                 size,
               }),
             });
+            if (res.ok) {
+              const result = await res.json();
+
+              if (result.cart && result.cart.items) {
+                const mappedItems = result.cart.items.map((item: any) => {
+                  return {
+                    ...item.product,
+                    quantity: item.quantity,
+                    selectedSize: item.size,
+                    _id: item.product._id,
+                  };
+                });
+
+                set({ cartItems: mappedItems });
+              }
+            }
           } catch (err) {
             console.error("DB Add Failed", err);
           }
-        }
-
-        const existingItem = cartItems.find(
-          (item) => item._id === id && item.selectedSize === size,
-        );
-        const providedStock = product.stock[size.toLowerCase()];
-
-        if (existingItem) {
-          const newQty = Math.min(
-            existingItem.quantity + quantity,
-            providedStock,
-          );
-          if (existingItem.quantity + quantity > providedStock) {
-            Alert.fire({ icon: "info", title: "Reached maximum stock!" });
-          }
-          set({
-            cartItems: cartItems.map((item) =>
-              item._id === id && item.selectedSize === size
-                ? { ...item, quantity: newQty }
-                : item,
-            ),
-          });
         } else {
-          if (providedStock < 1) {
-            Alert.fire({ icon: "info", title: "Out of stock!" });
-            return;
+          const existingItem = cartItems.find(
+            (item) => item._id === id && item.selectedSize === size,
+          );
+          const providedStock = product.stock[size.toLowerCase()];
+
+          if (existingItem) {
+            const newQty = Math.min(
+              existingItem.quantity + quantity,
+              providedStock,
+            );
+            if (existingItem.quantity + quantity > providedStock) {
+              Alert.fire({ icon: "info", title: "Reached maximum stock!" });
+            }
+            set({
+              cartItems: cartItems.map((item) =>
+                item._id === id && item.selectedSize === size
+                  ? { ...item, quantity: newQty }
+                  : item,
+              ),
+            });
+          } else {
+            if (providedStock < 1) {
+              Alert.fire({ icon: "info", title: "Out of stock!" });
+              return;
+            }
+            set({
+              cartItems: [
+                ...cartItems,
+                { ...product, quantity, selectedSize: size },
+              ],
+            });
           }
-          set({
-            cartItems: [
-              ...cartItems,
-              { ...product, quantity, selectedSize: size },
-            ],
-          });
         }
       },
 
-      updateItemInCart: async (id, currentSize, newQuantity, newSize) => {
-        const { cartItems, isUserLoggedIn } = get();
-        const targetSize = newSize || currentSize;
+      updateLocalQuantity: (id: string, size: string, newQuantity: number) => {
+        set((state) => ({
+          cartItems: state.cartItems.map((item) =>
+            item._id === id && item.selectedSize === size
+              ? { ...item, quantity: newQuantity }
+              : item,
+          ),
+        }));
+      },
 
-        if (isUserLoggedIn()) {
-          try {
-            await fetch("/api/cart/update", {
-              method: "PATCH",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                productId: id,
-                size: targetSize,
-                quantity: newQuantity,
-              }),
-            });
-          } catch (err) {
-            console.error("DB Update Failed", err);
+      updateItemInCart: async (id, size, newQuantity) => {
+        const { isUserLoggedIn } = get();
+
+        if (!isUserLoggedIn()) return;
+        try {
+          const res = await fetch("/api/cart/update", {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              productId: id,
+              size: size,
+              quantity: newQuantity,
+            }),
+          });
+          if (res.ok) {
+            const result = await res.json();
+
+            if (result.cart && result.cart.items) {
+              const mappedItems = result.cart.items.map((item: any) => {
+                return {
+                  ...item.product,
+                  quantity: item.quantity,
+                  selectedSize: item.size,
+                  _id: item.product._id,
+                };
+              });
+
+              set({ cartItems: mappedItems });
+            }
           }
+        } catch (err) {
+          console.error("DB Update Failed", err);
         }
-
-        // تحديث الـ UI (نفس الـ Logic القديم الخاص بك)
-        const updatedItems = cartItems.map((item) =>
-          item._id === id && item.selectedSize === currentSize
-            ? { ...item, quantity: newQuantity, selectedSize: targetSize }
-            : item,
-        );
-        set({ cartItems: updatedItems });
       },
 
       removeItemFromCart: async (id, size) => {
@@ -205,27 +233,43 @@ export const useCartStore = create<CartState>()(
 
         if (isUserLoggedIn()) {
           try {
-            await fetch("/api/cart/delete", {
+            const res = await fetch("/api/cart/delete", {
               method: "DELETE",
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({ productId: id, size }),
             });
+            if (res.ok) {
+              const result = await res.json();
+
+              if (result.cart && result.cart.items) {
+                const mappedItems = result.cart.items.map((item: any) => {
+                  return {
+                    ...item.product,
+                    quantity: item.quantity,
+                    selectedSize: item.size,
+                    _id: item.product._id,
+                  };
+                });
+
+                set({ cartItems: mappedItems });
+              }
+            }
           } catch (err) {
             console.error("DB Remove Failed", err);
           }
+        } else {
+          set((state) => ({
+            cartItems: state.cartItems.filter(
+              (item) => !(item._id === id && item.selectedSize === size),
+            ),
+          }));
         }
-
-        set((state) => ({
-          cartItems: state.cartItems.filter(
-            (item) => !(item._id === id && item.selectedSize === size),
-          ),
-        }));
       },
 
       clearCart: async () => {
         const { isUserLoggedIn } = get();
         if (isUserLoggedIn()) {
-          await fetch("/api/cart/clear", { method: "PUT" });
+          await fetch("/api/cart/clear", { method: "DELETE" });
         }
         set({ cartItems: [] });
       },

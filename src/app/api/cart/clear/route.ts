@@ -5,7 +5,7 @@ import { getUserFromToken } from "@/app/services/userService";
 import { clearCart } from "@/app/services/cartService";
 import { AppError } from "@/app/Errors/AppError";
 
-export async function PUT(req: Request) {
+export async function DELETE() {
   try {
     await dbConnect();
 

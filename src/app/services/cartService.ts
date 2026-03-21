@@ -138,7 +138,7 @@ export const updateItemInCart = async ({
   }
 
   if (quantity > product.stock) {
-    throw new AppError("Not enough stock", 400);
+    quantity = product.stock
   }
 
   if (quantity === 0) {

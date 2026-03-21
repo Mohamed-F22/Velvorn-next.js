@@ -5,6 +5,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import RemoveIcon from "@mui/icons-material/Remove";
 import AddIcon from "@mui/icons-material/Add";
 import Image from "next/image";
+import { useDebouncedCallback } from "use-debounce";
 
 interface item {
   _id: string;
@@ -19,7 +20,21 @@ interface item {
 
 const CartItem = (params: { item: item }) => {
   const { item } = params;
-  const { removeItemFromCart, updateItemInCart } = useCartStore();
+  const { removeItemFromCart, updateItemInCart, updateLocalQuantity } =
+    useCartStore();
+
+  const debouncedUpdateApi = useDebouncedCallback(
+    (id: string, size: string, quantity: number) => {
+      updateItemInCart(id, size, quantity);
+    },
+    500,
+  );
+
+  const handleQuantityChange = (newQty: number) => {
+    updateLocalQuantity(item._id, item.selectedSize, newQty);
+
+    debouncedUpdateApi(item._id, item.selectedSize, newQty);
+  };
 
   return (
     <Box
@@ -110,15 +125,9 @@ const CartItem = (params: { item: item }) => {
           >
             <IconButton
               onClick={() => {
-                if (item.quantity - 1 < 1) {
-                  return
+                if (item.quantity > 1) {
+                  handleQuantityChange(item.quantity - 1);
                 }
-                updateItemInCart(
-                  item._id,
-                  item.selectedSize,
-                  item.quantity - 1,
-                  item.selectedSize,
-                );
               }}
               size="small"
               sx={{ borderRadius: 0, p: 1.5 }}
@@ -135,12 +144,7 @@ const CartItem = (params: { item: item }) => {
                     item.selectedSize.toLowerCase() as keyof typeof item.stock
                   ];
                 if (item.quantity < currentStock) {
-                  updateItemInCart(
-                    item._id,
-                    item.selectedSize,
-                    item.quantity + 1,
-                    item.selectedSize,
-                  );
+                  handleQuantityChange(item.quantity + 1);
                 }
               }}
               size="small"
