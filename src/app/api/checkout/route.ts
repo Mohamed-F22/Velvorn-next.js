@@ -1,106 +1,19 @@
 import { dbConnect } from "@/app/lib/mongodb";
 import cartModel from "@/app/models/cartModel";
 import orderModel from "@/app/models/orderModel";
-import productModel from "@/app/models/ProductModel";
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
-import jwt from "jsonwebtoken";
 import mongoose from "mongoose";
+import { getUserFromToken } from "@/app/services/userService";
+import {
+  buildGuestOrderItems,
+  buildUserOrderItems,
+  validateAddress,
+} from "@/app/services/checkoutService";
+import { AppError } from "@/app/Errors/AppError";
 
-const SECRET = process.env.SECRET_JWT as string;
-const SHIPPING_FEES = 50;
+const SHIPPING_FEES = 15;
 
-// ================= UTIL =================
-function getUserFromToken(token?: string): string | null {
-  if (!token) return null;
-  try {
-    const decoded = jwt.verify(token, SECRET) as { id: string };
-    return decoded.id;
-  } catch {
-    return null;
-  }
-}
-
-function validateAddress(address: any) {
-  const required = [
-    "fullName",
-    "email",
-    "phone",
-    "governorate",
-    "city",
-    "addressDetails",
-  ];
-
-  return required.every((field) => address?.[field]);
-}
-
-// ================= SERVICE =================
-async function buildGuestOrderItems(guestItems: any[]) {
-  const productIds = guestItems.map((i) => i.productId);
-
-  const products = await productModel.find({
-    _id: { $in: productIds },
-  });
-
-  const productMap = new Map();
-  products.forEach((p) => productMap.set(p._id.toString(), p));
-
-  let total = 0;
-  const items: any[] = [];
-
-  for (const item of guestItems) {
-    const product = productMap.get(item.productId);
-    if (!product) continue;
-
-    if (product.stock < item.quantity) {
-      throw new Error("Not enough stock for some products");
-    }
-
-    const price = product.offerPrice || product.price;
-
-    items.push({
-      productTitle: product.title,
-      productImage: product.imgs[0],
-      unitPrice: product.price,
-      offerPrice: product.offerPrice || null,
-      quantity: item.quantity,
-      size: item.size,
-    });
-
-    total += price * item.quantity;
-  }
-
-  return { items, total };
-}
-
-async function buildUserOrderItems(userId: string) {
-  const userCart = await cartModel
-    .findOne({ userId, status: "active" })
-    .populate("items.product");
-
-  if (!userCart || userCart.items.length === 0) {
-    throw new Error("Cart is empty");
-  }
-
-  const items = userCart.items.map((item: any) => {
-    if (item.product.stock < item.quantity) {
-      throw new Error("Not enough stock");
-    }
-
-    return {
-      productTitle: item.product.title,
-      productImage: item.product.imgs[0],
-      unitPrice: item.product.price,
-      offerPrice: item.product.offerPrice,
-      quantity: item.quantity,
-      size: item.size,
-    };
-  });
-
-  return { items, total: userCart.totalAmount };
-}
-
-// ================= API =================
 export async function POST(req: Request) {
   const session = await mongoose.startSession();
 
@@ -115,10 +28,7 @@ export async function POST(req: Request) {
     const { shippingAddress, notes, guestItems } = body;
 
     if (!validateAddress(shippingAddress)) {
-      return NextResponse.json(
-        { message: "Invalid address data!" },
-        { status: 400 },
-      );
+      throw new AppError("Invalid address data!", 400);
     }
 
     let orderData;
@@ -134,7 +44,7 @@ export async function POST(req: Request) {
     const finalAmount = orderData.total + SHIPPING_FEES;
 
     let newOrder: any[] | undefined;
-    
+
     await session.withTransaction(async () => {
       newOrder = await orderModel.create(
         [

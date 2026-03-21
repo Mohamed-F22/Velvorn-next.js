@@ -1,10 +1,9 @@
 import { NextResponse } from "next/server";
 import { dbConnect } from "@/app/lib/mongodb";
-import jwt from "jsonwebtoken";
 import { cookies } from "next/headers";
-import { addItemToCart } from "./Service";
-
-const SECRET = process.env.SECRET_JWT as string;
+import { getUserFromToken } from "@/app/services/userService";
+import { addItemToCart } from "@/app/services/cartService";
+import { AppError } from "@/app/Errors/AppError";
 
 export async function POST(req: Request) {
   try {
@@ -15,18 +14,27 @@ export async function POST(req: Request) {
     const token = cookieStore.get("token")?.value;
 
     if (!token) {
-      return NextResponse.json(
-        { message: "Unauthorized. Please login first." },
-        { status: 401 },
-      );
+      throw new AppError("Unauthorized. Please login first.", 401);
     }
 
-    const decoded = jwt.verify(token, SECRET) as { id: string };
-    const userId = decoded.id;
+    const userId = await getUserFromToken(token);
 
-    const { productId, quantity, unitPrice, size } = await req.json();
+    if (!userId) {
+      throw new AppError("Invalid token", 401);
+    }
 
-    const cart = await addItemToCart({productId, quantity, unitPrice, size, userId});
+    const { productId, quantity, size } = await req.json();
+
+    if (!productId || !quantity || !size) {
+      throw new AppError("Missing some data!", 400);
+    }
+
+    const cart = await addItemToCart({
+      productId,
+      quantity,
+      size,
+      userId,
+    });
 
     return NextResponse.json(
       {
@@ -35,11 +43,10 @@ export async function POST(req: Request) {
       },
       { status: 200 },
     );
-  } catch (err) {
-    console.error("Add to cart error:", err);
+  } catch (err: any) {
     return NextResponse.json(
-      { message: "Internal Server Error" },
-      { status: 500 },
+      { message: err.message || "Internal Server Error" },
+      { status: err.statusCode || 500 },
     );
   }
 }

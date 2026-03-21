@@ -1,12 +1,10 @@
 import { NextResponse } from "next/server";
 import { dbConnect } from "@/app/lib/mongodb";
-import cartModel from "@/app/models/cartModel";
-import productModel from "@/app/models/ProductModel";
-import jwt from "jsonwebtoken";
 import { cookies } from "next/headers";
 import { RequestLog } from "@/app/models/RequestLog";
-
-const SECRET = process.env.SECRET_JWT as string;
+import { AppError } from "@/app/Errors/AppError";
+import { getUserFromToken } from "@/app/services/userService";
+import { getCart } from "@/app/services/cartService";
 
 export async function GET(req: Request) {
   try {
@@ -18,11 +16,14 @@ export async function GET(req: Request) {
     const token = cookieStore.get("token")?.value;
 
     if (!token) {
-      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+      throw new AppError("Unauthorized. Please login first.", 401);
     }
 
-    const decoded = jwt.verify(token, SECRET) as { id: string };
-    const userId = decoded.id;
+    const userId = await getUserFromToken(token);
+
+    if (!userId) {
+      throw new AppError("Invalid token", 401);
+    }
 
     if (idempotencyKey) {
       try {
@@ -37,18 +38,8 @@ export async function GET(req: Request) {
         throw err;
       }
     }
-
-    const cart = await cartModel
-      .findOne({ userId, status: "active" })
-      .populate({
-        path: "items.product",
-        model: productModel,
-        select: "title imgs price offerPrice stock",
-      });
-
-    if (!cart) {
-      return NextResponse.json({ message: "Cart not found" }, { status: 404 });
-    }
+    
+    const cart = await getCart({ userId });
 
     return NextResponse.json(
       {
@@ -57,11 +48,10 @@ export async function GET(req: Request) {
       },
       { status: 200 },
     );
-  } catch (err) {
-    console.error("Get cart error:", err);
+  } catch (err: any) {
     return NextResponse.json(
-      { message: "Internal Server Error" },
-      { status: 500 },
+      { message: err.message || "Internal Server Error" },
+      { status: err.statusCode || 500 },
     );
   }
 }

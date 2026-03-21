@@ -1,29 +1,28 @@
 import { NextResponse } from "next/server";
 import { dbConnect } from "@/app/lib/mongodb";
-import jwt from "jsonwebtoken";
 import { cookies } from "next/headers";
-import { mergeLocalCart } from "./Service";
 import { RequestLog } from "@/app/models/RequestLog";
-
-const SECRET = process.env.SECRET_JWT as string;
+import { getUserFromToken } from "@/app/services/userService";
+import { AppError } from "@/app/Errors/AppError";
+import { mergeLocalCart } from "@/app/services/cartService";
 
 export async function POST(req: Request) {
   try {
     await dbConnect();
-    
-    const idempotencyKey = req.headers.get("x-idempotency-key");    
+
+    const idempotencyKey = req.headers.get("x-idempotency-key");
 
     const cookieStore = await cookies();
     const token = cookieStore.get("token")?.value;
-
     if (!token) {
-      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+      throw new AppError("Unauthorized. Please login first.", 401);
     }
 
-    const decoded = jwt.verify(token, SECRET) as { id: string };
-    const userId = decoded.id;
+    const userId = await getUserFromToken(token);
 
-    const { localItems } = await req.json();
+    if (!userId) {
+      throw new AppError("Invalid token", 401);
+    }
 
     if (idempotencyKey) {
       try {
@@ -32,12 +31,14 @@ export async function POST(req: Request) {
         if (err.code === 11000) {
           return NextResponse.json(
             { message: "Request already processed" },
-            { status: 200 }
+            { status: 200 },
           );
         }
         throw err;
       }
     }
+
+    const { localItems } = await req.json();
 
     const cart = await mergeLocalCart(localItems, userId);
 
@@ -48,11 +49,10 @@ export async function POST(req: Request) {
       },
       { status: 200 },
     );
-  } catch (err) {
-    console.error("Merge error:", err);
+  } catch (err: any) {
     return NextResponse.json(
-      { message: "Internal Server Error" },
-      { status: 500 },
+      { message: err.message || "Internal Server Error" },
+      { status: err.statusCode || 500 },
     );
   }
 }

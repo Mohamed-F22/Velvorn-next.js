@@ -1,10 +1,9 @@
 import { NextResponse } from "next/server";
 import { dbConnect } from "@/app/lib/mongodb";
-import jwt from "jsonwebtoken";
 import { cookies } from "next/headers";
-import { updateItemInCart } from "./service";
-
-const SECRET = process.env.SECRET_JWT as string;
+import { getUserFromToken } from "@/app/services/userService";
+import { AppError } from "@/app/Errors/AppError";
+import { updateItemInCart } from "@/app/services/cartService";
 
 export async function PATCH(req: Request) {
   try {
@@ -14,11 +13,14 @@ export async function PATCH(req: Request) {
     const token = cookieStore.get("token")?.value;
 
     if (!token) {
-      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+      throw new AppError("Unauthorized. Please login first.", 401);
     }
 
-    const decoded = jwt.verify(token, SECRET) as { id: string };
-    const userId = decoded.id;
+    const userId = await getUserFromToken(token);
+
+    if (!userId) {
+      throw new AppError("Invalid token", 401);
+    }
 
     const { productId, size, quantity } = await req.json();
 
@@ -31,11 +33,10 @@ export async function PATCH(req: Request) {
       },
       { status: 200 },
     );
-  } catch (err) {
-    console.error("Update cart error:", err);
+  } catch (err: any) {
     return NextResponse.json(
-      { message: "Internal Server Error" },
-      { status: 500 },
+      { message: err.message || "Internal Server Error" },
+      { status: err.statusCode || 500 },
     );
   }
 }
