@@ -15,7 +15,7 @@ interface AuthState {
       password: string;
     },
     key: any,
-  ) => Promise<{ message: string; status: number }>;
+  ) => Promise<{ message: string; status: number; success: boolean }>;
   register: (data: {
     fullName: string;
     email: string;
@@ -43,14 +43,24 @@ export const useAuthStore = create<AuthState>((set) => ({
 
       const result = await res.json();
 
-      if (!res.ok) {
-        return result;
+      if (res.ok) {
+        set({ user: result.user });
+
+        const { cartItems, syncCartWithServer, fetchUserCart } =
+          useCartStore.getState();
+
+        if (cartItems.length > 0) {
+          await syncCartWithServer();
+        } else {
+          await fetchUserCart();
+        }
+
+        return { success: true, ...result };
       }
 
-      set({ user: result.user });
-      return result;
+      return { success: false, ...result };
     } catch (err) {
-      console.error("Login", err);
+      return { success: false, message: "Network error occurred" };
     }
   },
 

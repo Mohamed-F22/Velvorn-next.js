@@ -1,11 +1,8 @@
 import { NextResponse } from "next/server";
-import jwt from "jsonwebtoken";
-import bcrypt from "bcrypt";
 import { dbConnect } from "@/app/lib/mongodb";
-import userModel from "@/app/models/userModel";
 import { RequestLog } from "@/app/models/RequestLog";
-
-const SECRET = process.env.SECRET_JWT as string;
+import { login } from "@/app/services/server/userService";
+import { AppError } from "@/app/Errors/AppError";
 
 export async function POST(req: Request) {
   try {
@@ -18,78 +15,36 @@ export async function POST(req: Request) {
         await RequestLog.create({ key: idempotencyKey });
       } catch (err: any) {
         if (err.code === 11000) {
-          return NextResponse.json(
-            { message: "Request already processed", status: 401 },
-            { status: 200 },
-          );
+          throw new AppError("Request already processed", 409);
         }
         throw err;
       }
     }
 
     const { email, password } = await req.json();
-
-    if (!email || !password) {
-      return NextResponse.json(
-        { message: "Email and password are required !", status: 400 },
-        { status: 400 },
-      );
-    }
-
-    if (!SECRET) {
-      throw new Error("JWT_SECRET not defined");
-    }
-
-    const findUser = await userModel.findOne({ email });
-    if (!findUser) {
-      return NextResponse.json(
-        { message: "Incorrect email or password !", status: 401 },
-        { status: 401 },
-      );
-    }
-
-    const passwordMatch = await bcrypt.compare(password, findUser.password);
-
-    if (!passwordMatch) {
-      return NextResponse.json(
-        { message: "Incorrect email or password !", status: 401 },
-        { status: 401 },
-      );
-    }
-
-    const token = jwt.sign(
-      {
-        id: findUser._id,
-        email: findUser.email,
-        fullName: findUser.fullName,
-      },
-      SECRET,
-      { expiresIn: "1d" },
-    );
+    const { user, token } = await login({ email, password });
 
     const response = NextResponse.json({
       message: "Login success",
-      status: 200,
-      token,
+      token: token,
       user: {
-        fullName: findUser.fullName,
-        email: findUser.email,
+        fullName: user.fullName,
+        email: user.email,
       },
     });
 
     response.cookies.set("token", token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production", //true
-      sameSite: "strict",
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
       path: "/",
     });
 
     return response;
-  } catch (err) {
-    console.error("Login Error:", err);
+  } catch (err: any) {
     return NextResponse.json(
-      { message: "Something Went Wrong!" },
-      { status: 500 },
+      { message: err.message || "Internal Server Error" },
+      { status: err.statusCode || 500 },
     );
   }
 }

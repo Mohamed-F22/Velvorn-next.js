@@ -6,7 +6,6 @@ import { useAuthStore } from "../Zustand/AuthStore";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Alert } from "./Alert";
-import { useCartStore } from "../Zustand/CartState";
 import { v4 as uuidv4 } from "uuid";
 
 type LoginInputs = {
@@ -36,22 +35,16 @@ export default function LoginForm() {
 
   const onSubmit = async (data: LoginInputs) => {
     try {
-      // console.log("Before Login:", idempotencyKey);
-
       const result = await login(data, idempotencyKey);
 
-      console.log(result);
-      
-
-      if (result.status === 401) {
+      if (!result.success) {
         if (result.message !== "Request already processed") {
           setIdempotencyKey(uuidv4());
-          return;
+          Alert.fire({
+            icon: "error",
+            title: result.message || "Login failed",
+          });
         }
-        Alert.fire({
-          icon: "error",
-          title: result.message,
-        });
         return;
       }
 
@@ -59,22 +52,13 @@ export default function LoginForm() {
         icon: "success",
         title: result.message,
       });
+
       setIdempotencyKey(uuidv4());
 
       router.push("/");
-
-      const { cartItems } = useCartStore.getState();
-
-      // console.log("After Login:", idempotencyKey);
-      if (cartItems.length > 0) {
-        await useCartStore.getState().syncCartWithServer();
-      } else {
-        await useCartStore.getState().fetchUserCart();
-      }
-
       reset();
     } catch (err: any) {
-      alert(err.message);
+      alert("An unexpected error occurred");
     }
   };
 
