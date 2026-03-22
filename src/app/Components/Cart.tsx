@@ -9,7 +9,7 @@ import CartItem from "./CartItem";
 
 const Cart = () => {
   const { overlayOff } = useRender();
-  const { cartItems, getTotalAmount, clearCart } = useCartStore();
+  const { cartItems, totalAmount, clearCart } = useCartStore();
 
   const handleClearCart = () => {
     Swal.fire({
@@ -104,7 +104,7 @@ const Cart = () => {
               <Box display={"flex"} justifyContent={"space-between"} flexWrap={"wrap"}>
                 <Typography variant="h5" sx={{ fontSize: { xs: 18, sm: 25 } }}>
                   <span style={{ fontWeight: "bold" }}>Total Amount:</span>{" "}
-                  {getTotalAmount()} $
+                  {totalAmount} $
                 </Typography>{" "}
                 <Button
                   size="small"

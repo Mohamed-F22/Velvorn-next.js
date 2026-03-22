@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
 import { dbConnect } from "@/app/lib/mongodb";
 import { cookies } from "next/headers";
-import { getUserFromToken } from "@/app/services/userService";
-import { addItemToCart } from "@/app/services/cartService";
+import { getUserFromToken } from "@/app/services/server/userService";
+import { addItemToCart } from "@/app/services/server/cartService";
 import { AppError } from "@/app/Errors/AppError";
 
 export async function POST(req: Request) {

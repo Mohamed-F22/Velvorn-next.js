@@ -1,6 +1,6 @@
 import cartModel from "@/app/models/cartModel";
-import { AppError } from "../Errors/AppError";
-import productModel from "../models/ProductModel";
+import { AppError } from "../../Errors/AppError";
+import productModel from "../../models/ProductModel";
 
 interface createCart {
   userId: string;
@@ -138,7 +138,7 @@ export const updateItemInCart = async ({
   }
 
   if (quantity > product.stock) {
-    quantity = product.stock
+    quantity = product.stock;
   }
 
   if (quantity === 0) {

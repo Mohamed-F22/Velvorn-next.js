@@ -9,10 +9,13 @@ interface User {
 interface AuthState {
   user: User | null;
   setUser: (user: User | null) => void;
-  login: (data: {
-    email: string;
-    password: string;
-  }) => Promise<{ message: string; status: number }>;
+  login: (
+    data: {
+      email: string;
+      password: string;
+    },
+    key: any,
+  ) => Promise<{ message: string; status: number }>;
   register: (data: {
     fullName: string;
     email: string;
@@ -26,11 +29,14 @@ export const useAuthStore = create<AuthState>((set) => ({
 
   setUser: (user) => set({ user }),
 
-  login: async (data) => {
+  login: async (data, key) => {
     try {
       const res = await fetch("/api/auth/login", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          "X-Idempotency-Key": key,
+        },
         credentials: "include",
         body: JSON.stringify(data),
       });

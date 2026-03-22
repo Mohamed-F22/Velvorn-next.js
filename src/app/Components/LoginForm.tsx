@@ -4,9 +4,10 @@ import { TextField, Button, Box, Typography, Link } from "@mui/material";
 import { useForm } from "react-hook-form";
 import { useAuthStore } from "../Zustand/AuthStore";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Alert } from "./Alert";
 import { useCartStore } from "../Zustand/CartState";
+import { v4 as uuidv4 } from "uuid";
 
 type LoginInputs = {
   email: string;
@@ -31,11 +32,22 @@ export default function LoginForm() {
     }
   }, [user, router]);
 
+  const [idempotencyKey, setIdempotencyKey] = useState(uuidv4());
+
   const onSubmit = async (data: LoginInputs) => {
     try {
-      const result = await login(data);
+      // console.log("Before Login:", idempotencyKey);
+
+      const result = await login(data, idempotencyKey);
+
+      console.log(result);
+      
 
       if (result.status === 401) {
+        if (result.message !== "Request already processed") {
+          setIdempotencyKey(uuidv4());
+          return;
+        }
         Alert.fire({
           icon: "error",
           title: result.message,
@@ -47,10 +59,13 @@ export default function LoginForm() {
         icon: "success",
         title: result.message,
       });
+      setIdempotencyKey(uuidv4());
+
       router.push("/");
 
       const { cartItems } = useCartStore.getState();
 
+      // console.log("After Login:", idempotencyKey);
       if (cartItems.length > 0) {
         await useCartStore.getState().syncCartWithServer();
       } else {

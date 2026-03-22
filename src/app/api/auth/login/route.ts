@@ -3,12 +3,29 @@ import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import { dbConnect } from "@/app/lib/mongodb";
 import userModel from "@/app/models/userModel";
+import { RequestLog } from "@/app/models/RequestLog";
 
 const SECRET = process.env.SECRET_JWT as string;
 
 export async function POST(req: Request) {
   try {
     await dbConnect();
+
+    const idempotencyKey = req.headers.get("x-idempotency-key");
+
+    if (idempotencyKey) {
+      try {
+        await RequestLog.create({ key: idempotencyKey });
+      } catch (err: any) {
+        if (err.code === 11000) {
+          return NextResponse.json(
+            { message: "Request already processed", status: 401 },
+            { status: 200 },
+          );
+        }
+        throw err;
+      }
+    }
 
     const { email, password } = await req.json();
 

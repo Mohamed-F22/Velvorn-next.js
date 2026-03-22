@@ -1,16 +1,16 @@
 import { NextResponse } from "next/server";
 import { dbConnect } from "@/app/lib/mongodb";
 import { cookies } from "next/headers";
-import { RequestLog } from "@/app/models/RequestLog";
+// import { RequestLog } from "@/app/models/RequestLog";
 import { AppError } from "@/app/Errors/AppError";
-import { getUserFromToken } from "@/app/services/userService";
-import { getCart } from "@/app/services/cartService";
+import { getUserFromToken } from "@/app/services/server/userService";
+import { getCart } from "@/app/services/server/cartService";
 
 export async function GET(req: Request) {
   try {
     await dbConnect();
 
-    const idempotencyKey = req.headers.get("x-idempotency-key");
+    // const idempotencyKey = req.headers.get("x-idempotency-key");
 
     const cookieStore = await cookies();
     const token = cookieStore.get("token")?.value;
@@ -25,19 +25,19 @@ export async function GET(req: Request) {
       throw new AppError("Invalid token", 401);
     }
 
-    if (idempotencyKey) {
-      try {
-        await RequestLog.create({ key: idempotencyKey });
-      } catch (err: any) {
-        if (err.code === 11000) {
-          return NextResponse.json(
-            { message: "Request already processed" },
-            { status: 200 },
-          );
-        }
-        throw err;
-      }
-    }
+    // if (idempotencyKey) {
+    //   try {
+    //     await RequestLog.create({ key: idempotencyKey });
+    //   } catch (err: any) {
+    //     if (err.code === 11000) {
+    //       return NextResponse.json(
+    //         { message: "Request already processed" },
+    //         { status: 200 },
+    //       );
+    //     }
+    //     throw err;
+    //   }
+    // }
     
     const cart = await getCart({ userId });
 

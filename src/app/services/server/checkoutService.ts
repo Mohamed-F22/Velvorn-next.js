@@ -1,6 +1,6 @@
-import { AppError } from "../Errors/AppError";
-import cartModel from "../models/cartModel";
-import productModel from "../models/ProductModel";
+import { AppError } from "../../Errors/AppError";
+import cartModel from "../../models/cartModel";
+import productModel from "../../models/ProductModel";
 
 export function validateAddress(address: any) {
   const required = [
@@ -52,7 +52,6 @@ export async function buildGuestOrderItems(guestItems: any[]) {
 
   return { items, total };
 }
-
 
 export async function buildUserOrderItems(userId: string) {
   const userCart = await cartModel

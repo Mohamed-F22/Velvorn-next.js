@@ -1,9 +1,9 @@
 import { NextResponse } from "next/server";
 import { dbConnect } from "@/app/lib/mongodb";
 import { cookies } from "next/headers";
-import { getUserFromToken } from "@/app/services/userService";
+import { getUserFromToken } from "@/app/services/server/userService";
 import { AppError } from "@/app/Errors/AppError";
-import { updateItemInCart } from "@/app/services/cartService";
+import { updateItemInCart } from "@/app/services/server/cartService";
 
 export async function PATCH(req: Request) {
   try {

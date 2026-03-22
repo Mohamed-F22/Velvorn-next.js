@@ -4,12 +4,12 @@ import orderModel from "@/app/models/orderModel";
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import mongoose from "mongoose";
-import { getUserFromToken } from "@/app/services/userService";
+import { getUserFromToken } from "@/app/services/server/userService";
 import {
   buildGuestOrderItems,
   buildUserOrderItems,
   validateAddress,
-} from "@/app/services/checkoutService";
+} from "@/app/services/server/checkoutService";
 import { AppError } from "@/app/Errors/AppError";
 
 const SHIPPING_FEES = 15;
