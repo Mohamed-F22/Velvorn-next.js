@@ -1,76 +1,49 @@
 import { NextResponse } from "next/server";
 import { dbConnect } from "@/app/lib/mongodb";
-import userModel from "@/app/models/userModel";
-import jwt from "jsonwebtoken";
-import bcrypt from "bcrypt";
-import cartModel from "@/app/models/cartModel";
-
-const SECRET = process.env.SECRET_JWT as string;
+import { register } from "@/app/services/server/userService";
+import { RequestLog } from "@/app/models/RequestLog";
+import { AppError } from "@/app/Errors/AppError";
 
 export async function POST(req: Request) {
   try {
     await dbConnect();
+
+    const idempotencyKey = req.headers.get("x-idempotency-key");
+    if (idempotencyKey) {
+      try {
+        await RequestLog.create({ key: idempotencyKey });
+      } catch (err: any) {
+        if (err.code === 11000) {
+          throw new AppError("Request already processed", 409);
+        }
+        throw err;
+      }
+    }
+
     const { fullName, email, password } = await req.json();
-
-    if (!fullName || !email || !password) {
-      return NextResponse.json(
-        { message: "All fields are required" },
-        { status: 400 },
-      );
-    }
-
-    if (!SECRET) {
-      throw new Error("JWT_SECRET is not defined");
-    }
-
-    const findUser = await userModel.findOne({ email });
-    if (findUser) {
-      return NextResponse.json(
-        { message: "There is an account with this email!", status: 400 },
-        { status: 400 },
-      );
-    }
-
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    const newUser = await userModel.create({
-      email,
-      fullName,
-      password: hashedPassword,
-    });
-
-    await cartModel.create({
-      userId: newUser._id,
-      items: [],
-      totalAmount: 0,
-      status: "active",
-    });
-
-    const token = jwt.sign({id: newUser._id , fullName, email }, SECRET, { expiresIn: "1d" });
+    const token = await register({ fullName, email, password });
 
     const response = NextResponse.json({
       message: "Welcome To Velvorn",
-      status: 200,
       token,
       user: {
         fullName,
-        email
+        email,
       },
     });
 
     response.cookies.set("token", token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production", //true
-      sameSite: "strict",
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
       path: "/",
     });
 
     return response;
-  } catch (err) {
-    console.error("Register Error", err);
+  } catch (err: any) {
     return NextResponse.json(
-      { message: "Something Went Wrong!", status: 500 },
-      { status: 500 },
+      { message: err.message || "Internal Server Error" },
+      { status: err.statusCode || 500 },
     );
   }
 }

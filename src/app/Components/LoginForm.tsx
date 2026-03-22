@@ -22,8 +22,10 @@ export default function LoginForm() {
   } = useForm<LoginInputs>();
   const login = useAuthStore((state) => state.login);
   const user = useAuthStore((state) => state.user);
+  const isLoading = useAuthStore((state) => state.isLoading);
 
   const router = useRouter();
+
 
   useEffect(() => {
     if (user) {
@@ -67,7 +69,7 @@ export default function LoginForm() {
       <Box
         sx={{
           backgroundColor: "#f5f5f5",
-          width: "100vw",
+          width: "100%",
           height: "100vh",
           position: "relative",
         }}
@@ -120,18 +122,34 @@ export default function LoginForm() {
             helperText={errors.password ? errors.password.message : ""}
           />
 
-          <Button
-            type="submit"
-            variant="contained"
-            fullWidth
-            sx={{
-              mt: 2,
-              backgroundColor: "#1c1f22",
-              "&:hover": { backgroundColor: "#333" },
-            }}
-          >
-            Login
-          </Button>
+          {isLoading ? (
+            <Button
+              type="submit"
+              variant="contained"
+              disabled
+              fullWidth
+              sx={{
+                mt: 2,
+                backgroundColor: "#1c1f22",
+                "&:hover": { backgroundColor: "#333" },
+              }}
+            >
+              Loging...
+            </Button>
+          ) : (
+            <Button
+              type="submit"
+              variant="contained"
+              fullWidth
+              sx={{
+                mt: 2,
+                backgroundColor: "#1c1f22",
+                "&:hover": { backgroundColor: "#333" },
+              }}
+            >
+              Login
+            </Button>
+          )}
           <Typography variant="body2" mt={2} textAlign="center">
             <Link
               sx={{

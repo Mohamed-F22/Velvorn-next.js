@@ -6,6 +6,7 @@ import LatestDrop from "./Components/LatestDrop";
 import OffersSection from "./Components/OffersSection";
 import SportsWearCollection from "./Components/SportsWearCollection";
 import HeroSection from "./Components/HeroSection";
+import Footer from "./Components/Footer";
 
 const Home = async () => {
   const productsData = await getProducts();
@@ -18,6 +19,7 @@ const Home = async () => {
       <SportsWearCollection />
       <LatestDrop latestDrop={latestDrop} />
       <HeroSection />
+      <Footer />
     </>
   );
 };

@@ -4,9 +4,9 @@ import { TextField, Button, Box, Typography, Link } from "@mui/material";
 import { useForm } from "react-hook-form";
 import { useAuthStore } from "../Zustand/AuthStore";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Alert } from "./Alert";
-import { useCartStore } from "../Zustand/CartState";
+import { v4 as uuidv4 } from "uuid";
 
 type RegisterInputs = {
   fullName: string;
@@ -23,6 +23,7 @@ export default function RegisterForm() {
   } = useForm<RegisterInputs>();
 
   const registerUser = useAuthStore((state) => state.register);
+  const isLoading = useAuthStore((state) => state.isLoading);
   const router = useRouter();
 
   const user = useAuthStore((state) => state.user);
@@ -32,15 +33,21 @@ export default function RegisterForm() {
       router.push("/");
     }
   }, [user, router]);
+  
+  const [idempotencyKey, setIdempotencyKey] = useState(uuidv4());
 
   const onSubmit = async (data: RegisterInputs) => {
     try {
-      const result = await registerUser(data);
-      if (result.status === 400) {
-        Alert.fire({
-          icon: "error",
-          title: result.message,
-        });
+      const result = await registerUser(data, idempotencyKey);
+
+      if (!result.success) {
+        if (result.message !== "Request already processed") {
+          setIdempotencyKey(uuidv4());
+          Alert.fire({
+            icon: "error",
+            title: result.message || "Login failed",
+          });
+        }
         return;
       }
 
@@ -49,16 +56,12 @@ export default function RegisterForm() {
         title: result.message,
       });
 
-      const { cartItems } = useCartStore.getState();
-
-      if (cartItems.length > 0) {
-        await useCartStore.getState().syncCartWithServer();
-      }
+      setIdempotencyKey(uuidv4());
 
       router.push("/");
       reset();
     } catch (err: any) {
-      alert(err.message);
+      alert("An unexpected error occurred");
     }
   };
 
@@ -66,7 +69,7 @@ export default function RegisterForm() {
     <Box
       sx={{
         backgroundColor: "#f5f5f5",
-        width: "100vw",
+        width: "100%",
         height: "100vh",
         position: "relative",
       }}
@@ -135,18 +138,34 @@ export default function RegisterForm() {
           helperText={errors.password ? errors.password.message : ""}
         />
 
-        <Button
-          type="submit"
-          variant="contained"
-          fullWidth
-          sx={{
-            mt: 2,
-            backgroundColor: "#1c1f22",
-            "&:hover": { backgroundColor: "#333" },
-          }}
-        >
-          Register
-        </Button>
+        {isLoading ? (
+          <Button
+            type="submit"
+            variant="contained"
+            disabled
+            fullWidth
+            sx={{
+              mt: 2,
+              backgroundColor: "#1c1f22",
+              "&:hover": { backgroundColor: "#333" },
+            }}
+          >
+            Loading...
+          </Button>
+        ) : (
+          <Button
+            type="submit"
+            variant="contained"
+            fullWidth
+            sx={{
+              mt: 2,
+              backgroundColor: "#1c1f22",
+              "&:hover": { backgroundColor: "#333" },
+            }}
+          >
+            Register
+          </Button>
+        )}
 
         <Typography variant="body2" mt={2} textAlign="center">
           <Link

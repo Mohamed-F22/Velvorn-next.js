@@ -4,6 +4,7 @@ import SizeNumberForm from "../Components/SizeNumberForm";
 import ProductGallery from "../Components/ProductGallary";
 import SimilarProducts from "../Components/SimilarProducts";
 import HeroSection from "../Components/HeroSection";
+import Footer from "../Components/Footer";
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -59,9 +60,14 @@ export default async function BlogPost({ params }: PageProps) {
             <SizeNumberForm stock={product.stock} productId={product._id} />
           </Grid>
         </Grid>
-        <SimilarProducts style={product.style} id={product._id} category={product.category} />
+        <SimilarProducts
+          style={product.style}
+          id={product._id}
+          category={product.category}
+        />
       </Container>
       <HeroSection />
+      <Footer />
     </Box>
   );
 }
