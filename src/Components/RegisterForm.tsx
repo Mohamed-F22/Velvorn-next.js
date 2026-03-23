@@ -2,7 +2,7 @@
 
 import { TextField, Button, Box, Typography, Link } from "@mui/material";
 import { useForm } from "react-hook-form";
-import { useAuthStore } from "../Zustand/AuthStore";
+import { useAuthStore } from "../Stores/AuthStore";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Alert } from "./Alert";
@@ -25,7 +25,7 @@ export default function RegisterForm() {
   const registerUser = useAuthStore((state) => state.register);
   const isLoading = useAuthStore((state) => state.isLoading);
   const router = useRouter();
-  
+
   const [idempotencyKey, setIdempotencyKey] = useState(uuidv4());
 
   const onSubmit = async (data: RegisterInputs) => {

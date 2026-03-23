@@ -1,16 +1,16 @@
-import { dbConnect } from "@/app/lib/mongodb";
-import cartModel from "@/app/models/cartModel";
-import orderModel from "@/app/models/orderModel";
+import { dbConnect } from "@/lib/mongodb";
+import cartModel from "@/models/cartModel";
+import orderModel from "@/models/orderModel";
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import mongoose from "mongoose";
-import { getUserFromToken } from "@/app/services/server/userService";
+import { getUserFromToken } from "@/services/server/userService";
 import {
   buildGuestOrderItems,
   buildUserOrderItems,
   validateAddress,
-} from "@/app/services/server/checkoutService";
-import { AppError } from "@/app/Errors/AppError";
+} from "@/services/server/checkoutService";
+import { AppError } from "@/Errors/AppError";
 
 const SHIPPING_FEES = 15;
 

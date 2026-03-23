@@ -1,8 +1,20 @@
+"use client";
 import { Box, Button, Container, Grid, Typography } from "@mui/material";
-import { Product } from "@/app/lib/actions";
 import ProductsCarousel from "./ProductsCarousel";
+import { useProductsStore } from "../Stores/ProductsStore";
+import { useEffect } from "react";
 
-const LatestDrop = ({ latestDrop }: { latestDrop: Product[] }) => {
+const SimilarProducts = (props: {
+  style: string[];
+  id: string;
+  category: string;
+}) => {
+  const { similarProducts, getSimilarProducts } = useProductsStore();
+
+  useEffect(() => {
+    getSimilarProducts(props);
+  }, []);
+
   return (
     <Box sx={{ pt: 5, pb: 5 }}>
       <Container>
@@ -30,7 +42,7 @@ const LatestDrop = ({ latestDrop }: { latestDrop: Product[] }) => {
                 },
               }}
             >
-              Latest Drops
+              Similar Items
             </Typography>
           </Grid>
           <Grid
@@ -62,10 +74,10 @@ const LatestDrop = ({ latestDrop }: { latestDrop: Product[] }) => {
             </Box>
           </Grid>
         </Grid>
-      <ProductsCarousel products={latestDrop} />
+        <ProductsCarousel products={similarProducts} />
       </Container>
     </Box>
   );
 };
 
-export default LatestDrop;
+export default SimilarProducts;

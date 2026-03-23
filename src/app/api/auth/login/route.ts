@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
-import { dbConnect } from "@/app/lib/mongodb";
-import { RequestLog } from "@/app/models/RequestLog";
-import { login } from "@/app/services/server/userService";
-import { AppError } from "@/app/Errors/AppError";
+import { dbConnect } from "@/lib/mongodb";
+import { RequestLog } from "@/models/RequestLog";
+import { login } from "@/services/server/userService";
+import { AppError } from "@/Errors/AppError";
 
 export async function POST(req: Request) {
   try {

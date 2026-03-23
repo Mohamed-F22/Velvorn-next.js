@@ -1,10 +1,13 @@
 "use client";
 
 import { useEffect } from "react";
-import { useAuthStore } from "../Zustand/AuthStore";
+import { useAuthStore } from "../Stores/AuthStore";
 
-
-export default function AuthProvider({ children }: { children: React.ReactNode }) {
+export default function AuthProvider({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const setUser = useAuthStore((state) => state.setUser);
 
   useEffect(() => {

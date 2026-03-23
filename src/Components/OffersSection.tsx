@@ -1,5 +1,5 @@
 import { Box, Button, Container, Grid, Typography } from "@mui/material";
-import { Product } from "@/app/lib/actions";
+import { Product } from "@/lib/actions";
 import ProductsCarousel from "./ProductsCarousel";
 
 const OffersSection = ({ offerProducts }: { offerProducts: Product[] }) => {
@@ -59,7 +59,7 @@ const OffersSection = ({ offerProducts }: { offerProducts: Product[] }) => {
             </Box>
           </Grid>
         </Grid>
-      <ProductsCarousel products={offerProducts} />
+        <ProductsCarousel products={offerProducts} />
       </Container>
     </Box>
   );

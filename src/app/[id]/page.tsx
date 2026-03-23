@@ -1,10 +1,10 @@
 import { Box, Container, Grid, Typography } from "@mui/material";
-import { getProduct } from "../lib/actions";
-import SizeNumberForm from "../Components/SizeNumberForm";
-import ProductGallery from "../Components/ProductGallary";
-import SimilarProducts from "../Components/SimilarProducts";
-import HeroSection from "../Components/HeroSection";
-import Footer from "../Components/Footer";
+import { getProduct } from "../../lib/actions";
+import SizeNumberForm from "../../Components/SizeNumberForm";
+import ProductGallery from "../../Components/ProductGallary";
+import SimilarProducts from "../../Components/SimilarProducts";
+import HeroSection from "../../Components/HeroSection";
+import Footer from "../../Components/Footer";
 
 interface PageProps {
   params: Promise<{ id: string }>;

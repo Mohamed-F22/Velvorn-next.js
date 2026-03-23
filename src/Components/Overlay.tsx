@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import { Box } from "@mui/material";
 import { useRender } from "../Context/visibility/RenderContext";
@@ -7,7 +7,7 @@ const Overlay = () => {
   const { overlayOff } = useRender();
   const handleCloseCart = () => {
     document.getElementById("cart")?.classList.remove("active-cart");
-    overlayOff()
+    overlayOff();
   };
 
   return (
@@ -22,7 +22,7 @@ const Overlay = () => {
         width: "100%",
         height: "100%",
         backgroundColor: "rgba(0, 0, 0, 0.5)",
-        zIndex: 50
+        zIndex: 50,
       }}
     ></Box>
   );

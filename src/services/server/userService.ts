@@ -1,9 +1,9 @@
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
-import userModel from "@/app/models/userModel";
-import { AppError } from "@/app/Errors/AppError";
+import userModel from "@/models/userModel";
+import { AppError } from "@/Errors/AppError";
 import { Password } from "@mui/icons-material";
-import cartModel from "@/app/models/cartModel";
+import cartModel from "@/models/cartModel";
 
 const SECRET = process.env.SECRET_JWT as string;
 

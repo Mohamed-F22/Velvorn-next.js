@@ -1,4 +1,4 @@
-import cartModel from "@/app/models/cartModel";
+import cartModel from "@/models/cartModel";
 import { AppError } from "../../Errors/AppError";
 import productModel from "../../models/ProductModel";
 

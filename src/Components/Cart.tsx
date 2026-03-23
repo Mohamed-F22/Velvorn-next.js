@@ -4,7 +4,7 @@ import Button from "@mui/material/Button";
 import CloseIcon from "@mui/icons-material/Close";
 import { useRender } from "../Context/visibility/RenderContext";
 import Swal from "sweetalert2";
-import { useCartStore } from "@/app/Zustand/CartState";
+import { useCartStore } from "@/Stores/CartState";
 import CartItem from "./CartItem";
 
 const Cart = () => {
@@ -101,7 +101,11 @@ const Cart = () => {
               justifyContent={"space-between"}
               flexDirection={"column"}
             >
-              <Box display={"flex"} justifyContent={"space-between"} flexWrap={"wrap"}>
+              <Box
+                display={"flex"}
+                justifyContent={"space-between"}
+                flexWrap={"wrap"}
+              >
                 <Typography variant="h5" sx={{ fontSize: { xs: 18, sm: 25 } }}>
                   <span style={{ fontWeight: "bold" }}>Total Amount:</span>{" "}
                   {totalAmount} $

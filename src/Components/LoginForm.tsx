@@ -2,7 +2,7 @@
 
 import { TextField, Button, Box, Typography, Link } from "@mui/material";
 import { useForm } from "react-hook-form";
-import { useAuthStore } from "../Zustand/AuthStore";
+import { useAuthStore } from "../Stores/AuthStore";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Alert } from "./Alert";

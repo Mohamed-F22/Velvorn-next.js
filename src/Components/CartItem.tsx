@@ -1,6 +1,6 @@
 "use client";
 import { Box, IconButton, Typography } from "@mui/material";
-import { useCartStore } from "@/app/Zustand/CartState";
+import { useCartStore } from "@/Stores/CartState";
 import DeleteIcon from "@mui/icons-material/Delete";
 import RemoveIcon from "@mui/icons-material/Remove";
 import AddIcon from "@mui/icons-material/Add";

@@ -29,10 +29,10 @@ import CardGiftcardIcon from "@mui/icons-material/CardGiftcard";
 import SearchIcon from "@mui/icons-material/Search";
 import PersonIcon from "@mui/icons-material/Person";
 import { useRender } from "../Context/visibility/RenderContext";
-import { useCartStore } from "@/app/Zustand/CartState";
-import { useAuthStore } from "../Zustand/AuthStore";
+import { useCartStore } from "@/Stores/CartState";
+import { useAuthStore } from "../Stores/AuthStore";
 import { useDebouncedCallback } from "use-debounce";
-import { useProductsStore } from "../Zustand/ProductsStore";
+import { useProductsStore } from "../Stores/ProductsStore";
 import Link from "next/link";
 
 const CartBadge = styled(Badge)`

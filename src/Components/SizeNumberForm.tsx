@@ -3,7 +3,7 @@ import { useState } from "react";
 import { Box, Button, Typography, Stack, IconButton } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
-import { useCartStore } from "../Zustand/CartState";
+import { useCartStore } from "../Stores/CartState";
 
 interface stock {
   xs: number;
@@ -20,7 +20,7 @@ const SizeNumberForm = (params: { stock: stock; productId: string }) => {
   const sizes = ["XS", "SM", "MD", "LG", "XL"];
 
   const handleAddItemToCart = () => {
-    addItemToCart(params.productId, size.toLowerCase() as string , quantity);
+    addItemToCart(params.productId, size.toLowerCase() as string, quantity);
   };
 
   return (

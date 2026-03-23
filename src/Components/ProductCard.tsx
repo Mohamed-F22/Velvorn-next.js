@@ -1,7 +1,7 @@
 import { Box, Typography } from "@mui/material";
 import Image from "next/image";
 import Link from "next/link";
-import { Product } from "@/app/lib/actions";
+import { Product } from "@/lib/actions";
 
 const ProductCard = (params: { product: Product }) => {
   const { product } = params;
@@ -9,7 +9,7 @@ const ProductCard = (params: { product: Product }) => {
     <Link style={{ textDecoration: "none" }} href={`/${product._id}`}>
       <Box
         className="product-card"
-        sx={{ position: "relative", overflow: "hidden",aspectRatio: "4 / 5", }}
+        sx={{ position: "relative", overflow: "hidden", aspectRatio: "4 / 5" }}
       >
         <Image
           src={product.imgs[0]}
@@ -47,7 +47,7 @@ const ProductCard = (params: { product: Product }) => {
           <Typography variant="body2" sx={{ fontWeight: 700, color: "#222" }}>
             {product.offerPrice ? (
               <>
-                <Typography component="span" sx={{ fontWeight: 700, mr: 1, }}>
+                <Typography component="span" sx={{ fontWeight: 700, mr: 1 }}>
                   {product.offerPrice.toFixed(2)} $
                 </Typography>
                 <Typography
@@ -55,7 +55,7 @@ const ProductCard = (params: { product: Product }) => {
                   sx={{
                     textDecoration: "line-through",
                     color: "#999",
-                    
+
                     fontWeight: 400,
                   }}
                 >

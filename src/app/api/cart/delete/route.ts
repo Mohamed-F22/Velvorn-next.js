@@ -1,9 +1,9 @@
 import { NextResponse } from "next/server";
-import { dbConnect } from "@/app/lib/mongodb";
+import { dbConnect } from "@/lib/mongodb";
 import { cookies } from "next/headers";
-import { getUserFromToken } from "@/app/services/server/userService";
-import { deleteItem } from "@/app/services/server/cartService";
-import { AppError } from "@/app/Errors/AppError";
+import { getUserFromToken } from "@/services/server/userService";
+import { deleteItem } from "@/services/server/cartService";
+import { AppError } from "@/Errors/AppError";
 
 export async function DELETE(req: Request) {
   try {
