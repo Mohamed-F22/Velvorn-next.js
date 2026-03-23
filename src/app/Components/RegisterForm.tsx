@@ -4,7 +4,7 @@ import { TextField, Button, Box, Typography, Link } from "@mui/material";
 import { useForm } from "react-hook-form";
 import { useAuthStore } from "../Zustand/AuthStore";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Alert } from "./Alert";
 import { v4 as uuidv4 } from "uuid";
 
@@ -25,14 +25,6 @@ export default function RegisterForm() {
   const registerUser = useAuthStore((state) => state.register);
   const isLoading = useAuthStore((state) => state.isLoading);
   const router = useRouter();
-
-  const user = useAuthStore((state) => state.user);
-
-  useEffect(() => {
-    if (user) {
-      router.push("/");
-    }
-  }, [user, router]);
   
   const [idempotencyKey, setIdempotencyKey] = useState(uuidv4());
 

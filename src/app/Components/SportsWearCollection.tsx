@@ -89,10 +89,14 @@ const SportsWearCollection = () => {
           <Image
             src="/sports-wear-collection.png"
             alt="Sports Wear Collection Image"
-            fill
+            width={800}
+            height={600}
             style={{
-              objectFit: "contain",
-              objectPosition: "bottom center",
+              height: "100%",
+              width: "auto",
+              position: "absolute",
+              left: "50%",
+              transform: "translateX(-50%)",
             }}
           />
         </Box>

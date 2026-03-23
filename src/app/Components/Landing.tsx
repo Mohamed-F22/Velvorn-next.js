@@ -29,28 +29,32 @@ const Landing = () => {
         }}
       >
         <Slide direction="up" in={true} timeout={1000}>
-          <Box
-            sx={{
-              height: "100%",
-            }}
-          >
-            <Fade in={true} timeout={2000}>
-              <Image
-                src="/landing.png"
-                alt="landing"
-                width={800}
-                height={600}
-                style={{
-                  height: "100%",
-                  width: "auto",
-                  position: "absolute",
-                  left: "50%",
-                  transform: "translateX(-50%)",
-                }}
-                priority
-              />
-            </Fade>
-          </Box>
+          <div style={{ height: "100%" }}>
+            <Box
+              sx={{
+                height: "100%",
+              }}
+            >
+              <Fade in={true} timeout={2000}>
+                <div>
+                  <Image
+                    src="/landing.png"
+                    alt="landing"
+                    width={800}
+                    height={600}
+                    style={{
+                      height: "100%",
+                      width: "auto",
+                      position: "absolute",
+                      left: "50%",
+                      transform: "translateX(-50%)",
+                    }}
+                    priority
+                  />
+                </div>
+              </Fade>
+            </Box>
+          </div>
         </Slide>
       </Box>
       <Container>
@@ -71,38 +75,42 @@ const Landing = () => {
             }}
           >
             <Fade in={true} timeout={500}>
-              <Slide direction="right" in={true} timeout={500}>
-                <Typography
-                  variant="h1"
-                  sx={{
-                    fontWeight: "700",
-                    fontSize: { xs: "3.7rem", sm: "5rem", md: "10rem" },
-                    letterSpacing: "0.2em",
-                    lineHeight: 1,
-                    mb: 4,
-                    color: "#222",
-                  }}
-                >
-                  VELV
-                </Typography>
-              </Slide>
+              <div>
+                <Slide direction="right" in={true} timeout={500}>
+                  <Typography
+                    variant="h1"
+                    sx={{
+                      fontWeight: "700",
+                      fontSize: { xs: "3.7rem", sm: "5rem", md: "10rem" },
+                      letterSpacing: "0.2em",
+                      lineHeight: 1,
+                      mb: 4,
+                      color: "#222",
+                    }}
+                  >
+                    VELV
+                  </Typography>
+                </Slide>
+              </div>
             </Fade>
             <Fade in={true} timeout={800}>
-              <Slide direction="left" in={true} timeout={800}>
-                <Typography
-                  variant="h1"
-                  sx={{
-                    fontWeight: "700",
-                    fontSize: { xs: "3.7rem", sm: "5rem", md: "10rem" },
-                    letterSpacing: "0.2em",
-                    lineHeight: 1,
-                    mb: 4,
-                    color: "#222",
-                  }}
-                >
-                  ORN
-                </Typography>
-              </Slide>
+              <div>
+                <Slide direction="left" in={true} timeout={800}>
+                  <Typography
+                    variant="h1"
+                    sx={{
+                      fontWeight: "700",
+                      fontSize: { xs: "3.7rem", sm: "5rem", md: "10rem" },
+                      letterSpacing: "0.2em",
+                      lineHeight: 1,
+                      mb: 4,
+                      color: "#222",
+                    }}
+                  >
+                    ORN
+                  </Typography>
+                </Slide>
+              </div>
             </Fade>
           </Box>
           <Fade in={true} timeout={1000}>
