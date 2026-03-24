@@ -4,7 +4,6 @@ import { Alert } from "../Components/Alert";
 import { persist, createJSONStorage } from "zustand/middleware";
 import { useAuthStore } from "./AuthStore";
 import CartItem from "../Components/CartItem";
-import { v4 as uuidv4 } from "uuid";
 import { cartService, mapCartItems } from "../services/client/cartService";
 
 interface Product {

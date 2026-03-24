@@ -2,7 +2,6 @@ import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import userModel from "@/models/userModel";
 import { AppError } from "@/Errors/AppError";
-import { Password } from "@mui/icons-material";
 import cartModel from "@/models/cartModel";
 
 const SECRET = process.env.SECRET_JWT as string;
@@ -39,7 +38,11 @@ export const login = async ({ email, password }: loginData) => {
     throw new AppError("Incorrect email or password !", 401);
   }
 
-  const token = jwt.sign({ id: user._id }, SECRET, { expiresIn: "1d" });
+  const token = jwt.sign(
+    { id: user._id, fullName: user.fullName, email: user.email },
+    SECRET,
+    { expiresIn: "7d" },
+  );
   return { user, token };
 };
 
@@ -80,9 +83,11 @@ export const register = async ({ fullName, email, password }: registerData) => {
     status: "active",
   });
 
-  const token = jwt.sign({ id: newUser._id }, SECRET, {
-    expiresIn: "1d",
-  });
+  const token = jwt.sign(
+    { id: newUser._id, fullName , email },
+    SECRET,
+    { expiresIn: "7d" },
+  );
 
   return token;
 };

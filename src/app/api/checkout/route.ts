@@ -21,8 +21,8 @@ export async function POST(req: Request) {
     await dbConnect();
 
     const cookieStore = await cookies();
-    const token = cookieStore.get("token")?.value;
-    const userId = getUserFromToken(token);
+    const token = cookieStore.get("token")?.value;    
+    const userId = await getUserFromToken(token);
 
     const body = await req.json();
     const { shippingAddress, notes, guestItems } = body;
@@ -38,7 +38,7 @@ export async function POST(req: Request) {
     } else if (guestItems?.length > 0) {
       orderData = await buildGuestOrderItems(guestItems);
     } else {
-      return NextResponse.json({ message: "Cart is empty" }, { status: 400 });
+      throw new AppError("Cart is empty!", 400);
     }
 
     const finalAmount = orderData.total + SHIPPING_FEES;
@@ -73,8 +73,6 @@ export async function POST(req: Request) {
       { status: 201 },
     );
   } catch (error: any) {
-    console.error(error);
-
     return NextResponse.json(
       { message: error.message || "Server Error" },
       { status: 500 },

@@ -11,13 +11,13 @@ export async function POST(req: Request) {
 
     const cookieStore = await cookies();
 
-    const token = cookieStore.get("token")?.value;
+    const token = cookieStore.get("token")?.value;    
 
     if (!token) {
       throw new AppError("Unauthorized. Please login first.", 401);
     }
 
-    const userId = await getUserFromToken(token);
+    const userId = await getUserFromToken(token);    
 
     if (!userId) {
       throw new AppError("Invalid token", 401);

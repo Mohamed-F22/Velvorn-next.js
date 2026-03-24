@@ -6,6 +6,7 @@ import { useRender } from "../Context/visibility/RenderContext";
 import Swal from "sweetalert2";
 import { useCartStore } from "@/Stores/CartState";
 import CartItem from "./CartItem";
+import { useRouter } from "next/navigation";
 
 const Cart = () => {
   const { overlayOff } = useRender();
@@ -37,7 +38,11 @@ const Cart = () => {
     overlayOff();
   };
 
-  const handleGoToCheckout = () => {};
+  const router = useRouter();
+  const handleGoToCheckout = () => {
+    router.push("/checkout");
+    handleCloseCart()
+  };
 
   return (
     <Box
