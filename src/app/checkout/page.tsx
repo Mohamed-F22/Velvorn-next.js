@@ -151,12 +151,12 @@ const Checkout = () => {
             sx={{
               display: "flex",
               justifyContent: "right",
-              px: { md: 4 },
+              px: { xs: 1.5,md: 4 },
               pt: "90px",
               mb: "10px",
             }}
           >
-            <Box sx={{ width: { xs: "100%", lg: "544px" } }}>
+            <Box sx={{ width: { xs: "100%", lg: "544px" }}}>
               <Typography variant="h5" mb={3} fontWeight="bold">
                 Delivery
               </Typography>
@@ -362,12 +362,15 @@ const Checkout = () => {
             sx={{
               borderLeft: { md: "1px solid #eee" },
               bgcolor: { xs: "transparent", md: "#f5f5f5" },
-              px: { md: 4 },
-              pt: "90px",
+              px: { xs: 1.5,md: 4 },
+              pt: {xs: "15px",md: "90px"},
               mb: "10px",
             }}
           >
-            <Box sx={{ width: { xs: "100%", lg: "544px" } }}>
+            <Box sx={{ width: { xs: "100%", lg: "544px" }}}>
+                            <Typography variant="h5" mb={3} fontWeight="bold">
+                Cart Summary
+              </Typography>
               {cartItems.map((item: item) => (
                 <Box
                   key={item._id}
