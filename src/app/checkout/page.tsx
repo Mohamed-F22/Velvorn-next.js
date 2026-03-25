@@ -123,11 +123,12 @@ const Checkout = () => {
           body: JSON.stringify(finalData),
         });
 
-        const result = await res.json();
+        const fetchResult = await res.json();
+        
         if (res.ok) {
-          if (result.message !== "Request already processed") {
+          if (fetchResult.message === "Request already processed") {
             setIdempotencyKey(uuidv4());
-            return null;
+            return;
           }
           Swal.fire({
             title: "Your order confirmed successfully",
