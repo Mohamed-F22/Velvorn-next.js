@@ -479,7 +479,7 @@ const Checkout = () => {
                   Total
                 </Typography>
                 <Typography variant="h6" fontWeight="bold">
-                  {(totalAmount + 75).toLocaleString()} $
+                  {(totalAmount + 15).toLocaleString()} $
                 </Typography>
               </Box>
             </Box>
