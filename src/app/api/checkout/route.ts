@@ -11,6 +11,7 @@ import {
   validateAddress,
 } from "@/services/server/checkoutService";
 import { AppError } from "@/Errors/AppError";
+import { RequestLog } from "@/models/RequestLog";
 
 const SHIPPING_FEES = 15;
 
@@ -20,8 +21,21 @@ export async function POST(req: Request) {
   try {
     await dbConnect();
 
+    const idempotencyKey = req.headers.get("x-idempotency-key");
+
+    if (idempotencyKey) {
+      try {
+        await RequestLog.create({ key: idempotencyKey });
+      } catch (err: any) {
+        if (err.code === 11000) {
+          throw new AppError("Request already processed", 409);
+        }
+        throw err;
+      }
+    }
+
     const cookieStore = await cookies();
-    const token = cookieStore.get("token")?.value;    
+    const token = cookieStore.get("token")?.value;
     const userId = await getUserFromToken(token);
 
     const body = await req.json();

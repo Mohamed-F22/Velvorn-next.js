@@ -4,7 +4,6 @@ import { useCartStore } from "@/Stores/CartState";
 import { useForm, Controller } from "react-hook-form";
 import {
   Box,
-  Container,
   Grid,
   TextField,
   Typography,
@@ -12,10 +11,11 @@ import {
   MenuItem,
   Divider,
   Paper,
-  IconButton,
 } from "@mui/material";
-import Link from "next/link";
-import ShoppingBagOutlinedIcon from "@mui/icons-material/ShoppingBagOutlined";
+import { useRouter } from "next/navigation";
+import Swal from "sweetalert2";
+import { v4 as uuidv4 } from "uuid";
+import { useState } from "react";
 
 const GOVERNORATES = [
   "Cairo",
@@ -58,9 +58,21 @@ interface item {
 }
 
 const Checkout = () => {
-  const { cartItems, totalAmount } = useCartStore();
+  const { cartItems, totalAmount, clearCart } = useCartStore();
   const user = useAuthStore((state) => state.user);
-  
+  const router = useRouter();
+
+  interface OrderFormData {
+    fullName: string;
+    email: string;
+    phone: string;
+    governorate: string;
+    city: string;
+    addressDetails: string;
+    postalCode: string;
+    notes: string;
+  }
+
   const {
     control,
     handleSubmit,
@@ -72,14 +84,62 @@ const Checkout = () => {
       phone: "",
       governorate: "Cairo",
       city: "",
-      address: "",
+      addressDetails: "",
       postalCode: "",
       notes: "",
     },
   });
 
-  const onSubmit = (data: any) => {
-    console.log(data);
+  const [idempotencyKey, setIdempotencyKey] = useState(uuidv4());
+
+  const onSubmit = async (data: OrderFormData) => {
+    const { notes, ...shippingAddress } = data;
+
+    const finalData = {
+      guestItems: user
+        ? []
+        : cartItems.map((item) => ({
+            productId: item._id,
+            quantity: item.quantity,
+            size: item.selectedSize,
+          })),
+      shippingAddress,
+      notes,
+    };
+
+    Swal.fire({
+      title: "Confirm Order!",
+      text: "You won't be able to revert this!",
+      confirmButtonColor: "#222",
+      confirmButtonText: "Order Now",
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        const res = await fetch("/api/checkout", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "X-Idempotency-Key": idempotencyKey,
+          },
+          body: JSON.stringify(finalData),
+        });
+
+        const result = await res.json();
+        if (res.ok) {
+          if (result.message !== "Request already processed") {
+            setIdempotencyKey(uuidv4());
+            return null;
+          }
+          Swal.fire({
+            title: "Your order confirmed successfully",
+            text: "We started working on it",
+            icon: "success",
+          });
+          router.push("/");
+          clearCart();
+        }
+        setIdempotencyKey(uuidv4());
+      }
+    });
   };
 
   return (
@@ -93,7 +153,7 @@ const Checkout = () => {
               justifyContent: "right",
               px: { md: 4 },
               pt: "90px",
-              mb: "10px"
+              mb: "10px",
             }}
           >
             <Box sx={{ width: { xs: "100%", lg: "544px" } }}>
@@ -193,7 +253,7 @@ const Checkout = () => {
 
                 <Grid size={{ xs: 12 }}>
                   <Controller
-                    name="address"
+                    name="addressDetails"
                     control={control}
                     rules={{ required: "Address details are required" }}
                     render={({ field }) => (
@@ -203,8 +263,8 @@ const Checkout = () => {
                         fullWidth
                         multiline
                         rows={2}
-                        error={!!errors.address}
-                        helperText={errors.address?.message}
+                        error={!!errors.addressDetails}
+                        helperText={errors.addressDetails?.message}
                       />
                     )}
                   />
@@ -304,7 +364,7 @@ const Checkout = () => {
               bgcolor: { xs: "transparent", md: "#f5f5f5" },
               px: { md: 4 },
               pt: "90px",
-              mb: "10px"
+              mb: "10px",
             }}
           >
             <Box sx={{ width: { xs: "100%", lg: "544px" } }}>
@@ -360,10 +420,10 @@ const Checkout = () => {
                         mr: 1,
                       }}
                     >
-                      
                       {item.offerPrice
                         ? item.offerPrice.toFixed(2)
-                        : (item.price * item.quantity).toFixed(2)} $
+                        : (item.price * item.quantity).toFixed(2)}{" "}
+                      $
                     </Typography>
                     {item.offerPrice && (
                       <Typography

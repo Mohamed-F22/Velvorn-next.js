@@ -50,10 +50,7 @@ export const useAuthStore = create<AuthState>()(
             body: JSON.stringify(data),
           });
 
-          const result = await res.json();
-
-          console.log(result);
-          
+          const result = await res.json();          
 
           if (res.ok) {
             set({ user: result.user });
