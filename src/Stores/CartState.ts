@@ -79,7 +79,9 @@ export const useCartStore = create<CartState>()(
         const existingItem = cartItems.find(
           (item) => item._id === id && item.selectedSize === size,
         );
+
         const providedStock = product.stock[size.toLowerCase()];
+
         if (existingItem && existingItem.quantity + quantity > providedStock) {
           Alert.fire({ icon: "info", title: "Reached maximum stock!" });
         }
@@ -102,37 +104,60 @@ export const useCartStore = create<CartState>()(
             console.error("DB Add Failed", err);
           }
         } else {
+          let updatedCart;
+
           if (existingItem) {
             const newQty = Math.min(
               existingItem.quantity + quantity,
               providedStock,
             );
-            set({
-              cartItems: cartItems.map((item) =>
-                item._id === id && item.selectedSize === size
-                  ? { ...item, quantity: newQty }
-                  : item,
-              ),
-            });
+            updatedCart = cartItems.map((item) =>
+              item._id === id && item.selectedSize === size
+                ? { ...item, quantity: newQty }
+                : item,
+            );
           } else {
-            set({
-              cartItems: [
-                ...cartItems,
-                { ...product, quantity, selectedSize: size },
-              ],
-            });
+            updatedCart = [
+              ...cartItems,
+              {
+                ...product,
+                quantity,
+                selectedSize: size,
+                finalPrice: product.offerPrice || product.price,
+              },
+            ];
           }
+
+          const newTotal = updatedCart.reduce((acc, item) => {
+            const price = item.offerPrice || item.price;
+            return acc + price * item.quantity;
+          }, 0);
+
+          set({
+            cartItems: updatedCart,
+            totalAmount: newTotal,
+          });
         }
       },
 
-      updateLocalQuantity: (id: string, size: string, newQuantity: number) => {
-        set((state) => ({
-          cartItems: state.cartItems.map((item) =>
+      updateLocalQuantity: (id, size, newQuantity) => {
+        set((state) => {
+          const updatedCart = state.cartItems.map((item) =>
             item._id === id && item.selectedSize === size
               ? { ...item, quantity: newQuantity }
               : item,
-          ),
-        }));
+          );
+
+          const newTotal = updatedCart.reduce((acc, item) => {
+            const price = item.offerPrice || item.price;
+            return acc + price * item.quantity;
+          }, 0);
+
+          return {
+            cartItems: updatedCart,
+            totalAmount: newTotal,
+          };
+        });
       },
 
       updateItemInCart: async (id, size, newQuantity) => {
@@ -167,11 +192,21 @@ export const useCartStore = create<CartState>()(
             console.error("DB Remove Failed", err);
           }
         } else {
-          set((state) => ({
-            cartItems: state.cartItems.filter(
+          set((state) => {
+            const updatedCart = state.cartItems.filter(
               (item) => !(item._id === id && item.selectedSize === size),
-            ),
-          }));
+            );
+
+            const newTotal = updatedCart.reduce((acc, item) => {
+              const price = item.offerPrice || item.price;
+              return acc + price * item.quantity;
+            }, 0);
+
+            return {
+              cartItems: updatedCart,
+              totalAmount: newTotal,
+            };
+          });
         }
       },
 
