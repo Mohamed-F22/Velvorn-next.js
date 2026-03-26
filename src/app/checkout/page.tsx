@@ -14,8 +14,6 @@ import {
 } from "@mui/material";
 import { useRouter } from "next/navigation";
 import Swal from "sweetalert2";
-import { v4 as uuidv4 } from "uuid";
-import { useState } from "react";
 
 const GOVERNORATES = [
   "Cairo",
@@ -90,8 +88,6 @@ const Checkout = () => {
     },
   });
 
-  const [idempotencyKey, setIdempotencyKey] = useState(uuidv4());
-
   const onSubmit = async (data: OrderFormData) => {
     const { notes, ...shippingAddress } = data;
 
@@ -118,18 +114,11 @@ const Checkout = () => {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            "X-Idempotency-Key": idempotencyKey,
           },
           body: JSON.stringify(finalData),
         });
 
-        const fetchResult = await res.json();
-        
         if (res.ok) {
-          if (fetchResult.message === "Request already processed") {
-            setIdempotencyKey(uuidv4());
-            return;
-          }
           Swal.fire({
             title: "Your order confirmed successfully",
             text: "We started working on it",
@@ -137,8 +126,9 @@ const Checkout = () => {
           });
           router.push("/");
           clearCart();
+        } else {
+          console.log(res)
         }
-        setIdempotencyKey(uuidv4());
       }
     });
   };
