@@ -14,6 +14,8 @@ import {
 } from "@mui/material";
 import { useRouter } from "next/navigation";
 import Swal from "sweetalert2";
+import { v4 as uuidv4 } from "uuid";
+import { useRef, useState } from "react";
 
 const GOVERNORATES = [
   "Cairo",
@@ -88,49 +90,65 @@ const Checkout = () => {
     },
   });
 
+  const idempotencyKeyRef = useRef(uuidv4());
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const onSubmit = async (data: OrderFormData) => {
-    const { notes, ...shippingAddress } = data;
+    if (isSubmitting) return;
 
-    const finalData = {
-      guestItems: user
-        ? []
-        : cartItems.map((item) => ({
-            productId: item._id,
-            quantity: item.quantity,
-            size: item.selectedSize,
-          })),
-      shippingAddress,
-      notes,
-    };
-
-    Swal.fire({
+    const result = await Swal.fire({
       title: "Confirm Order!",
       text: "You won't be able to revert this!",
+      showCancelButton: true,
       confirmButtonColor: "#222",
       confirmButtonText: "Order Now",
-    }).then(async (result) => {
-      if (result.isConfirmed) {
-        const res = await fetch("/api/checkout", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(finalData),
-        });
-
-        if (res.ok) {
-          Swal.fire({
-            title: "Your order confirmed successfully",
-            text: "We started working on it",
-            icon: "success",
-          });
-          router.push("/");
-          clearCart();
-        } else {
-          console.log(res)
-        }
-      }
     });
+
+    if (!result.isConfirmed) return;
+
+    setIsSubmitting(true);
+
+    try {
+      const { notes, ...shippingAddress } = data;
+      const finalData = {
+        guestItems: user
+          ? []
+          : cartItems.map((item) => ({
+              productId: item._id,
+              quantity: item.quantity,
+              size: item.selectedSize,
+            })),
+        shippingAddress,
+        notes,
+      };
+
+      const res = await fetch("/api/checkout", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-Idempotency-Key": idempotencyKeyRef.current,
+        },
+        body: JSON.stringify(finalData),
+      });
+
+      const fetchResult = await res.json();
+
+      if (res.ok) {
+        await Swal.fire({
+          title: "Success!",
+          text: "Your order confirmed successfully",
+          icon: "success",
+        });
+        clearCart();
+        router.push("/");
+      } else {
+        throw new Error(fetchResult.message || "Something went wrong");
+      }
+    } catch (error: any) {
+      Swal.fire("Error", error.message, "error");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
