@@ -86,7 +86,7 @@ const SearchResults = styled(Paper)(({ theme }) => ({
   top: "100%",
   left: 0,
   right: 0,
-  zIndex: 10,
+  zIndex: 1300,
   marginTop: theme.spacing(1),
   maxHeight: "400px",
   overflowY: "auto",
@@ -97,15 +97,20 @@ function Navbar() {
   const user = useAuthStore((state) => state.user);
   const logout = useAuthStore((state) => state.logout);
   const { getCartCount } = useCartStore();
-  const { overlayOn } = useRender();
+  const { openLayer, closeLayer, closeAll, isOverlayVisible } = useRender();
   const router = useRouter();
 
   const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null);
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
 
-  const handleOpenNavMenu = (event: MouseEvent<HTMLElement>) =>
+  const handleOpenNavMenu = (event: MouseEvent<HTMLElement>) => {
     setAnchorElNav(event.currentTarget);
-  const handleCloseNavMenu = () => setAnchorElNav(null);
+    openLayer("menu");
+  };
+  const handleCloseNavMenu = () => {
+    setAnchorElNav(null);
+    closeLayer("menu");
+  };
 
   const handleOpenUserMenu = (event: MouseEvent<HTMLElement>) =>
     setAnchorElUser(event.currentTarget);
@@ -114,26 +119,44 @@ function Navbar() {
   const handleCart = () => {
     const cart = document.getElementById("cart");
     cart?.classList.toggle("active-cart");
-    overlayOn();
+    if (cart?.classList.contains("active-cart")) {
+      openLayer("cart");
+    } else {
+      closeLayer("cart");
+    }
   };
 
   const [open, setOpen] = useState(false);
   const [showSearchField, setShowSearchField] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
 
-  const { search, searchProducts, getProducts } = useProductsStore();
+  const { setSearchQuery, clearSearch, searchProducts, getProducts } =
+    useProductsStore();
   useEffect(() => {
     getProducts();
   }, []);
 
   const handleSearch = useDebouncedCallback((term: string) => {
-    search(term);
-    setOpen(term.length > 0);
+    setSearchQuery(term);
   }, 300);
 
   const handleClickAway = () => {
     setOpen(false);
+    setSearchTerm("");
+    clearSearch();
+    closeLayer("search");
   };
   const navPages = ["Women", "Men", "Categories"];
+
+  useEffect(() => {
+    if (!isOverlayVisible) {
+      setOpen(false);
+      setShowSearchField(false);
+      setSearchTerm("");
+      clearSearch();
+      setAnchorElNav(null);
+    }
+  }, [isOverlayVisible]);
 
   return (
     <AppBar
@@ -142,7 +165,7 @@ function Navbar() {
         backgroundColor: "#fff",
         color: "#222",
         height: "64px",
-        zIndex: 10,
+        zIndex: 1200,
       }}
     >
       <Container>
@@ -262,9 +285,18 @@ function Navbar() {
                   autoFocus={showSearchField}
                   placeholder="Search…"
                   inputProps={{ "aria-label": "search" }}
-                  onChange={(e) => handleSearch(e.target.value)}
+                  value={searchTerm}
+                  onChange={(e) => {
+                    const term = e.target.value;
+                    setSearchTerm(term);
+                    handleSearch(term);
+                    setOpen(true);
+                    openLayer("search");
+                  }}
                   onFocus={() => {
-                    if (searchProducts.length > 0) setOpen(true);
+                    clearSearch();
+                    setOpen(true);
+                    openLayer("search");
                   }}
                   sx={{
                     "& .MuiInputBase-input": {
@@ -275,7 +307,7 @@ function Navbar() {
                     },
                   }}
                 />
-                {open && searchProducts.length > 0 && (
+                {open && (
                   <SearchResults>
                     <Typography
                       variant="overline"
@@ -286,48 +318,67 @@ function Navbar() {
                         color: "text.secondary",
                       }}
                     >
-                      PRODUCTS
+                      {searchTerm.trim().length > 0
+                        ? "PRODUCTS"
+                        : "SUGGESTIONS"}
                     </Typography>
                     <Divider />
-                    <List sx={{ p: 0 }}>
-                      {searchProducts.map((product) => (
-                        <Link
-                          style={{ textDecoration: "none" }}
-                          href={`/${product._id}`}
-                          key={product._id}
-                        >
-                          <ListItem disablePadding>
-                            <ListItemButton
-                              onClick={() => {
-                                setOpen(false);
-                                setShowSearchField(false);
-                              }}
-                              sx={{ gap: 2 }}
-                            >
-                              <Box
-                                component="img"
-                                src={product.imgs[0]}
-                                alt={product.title}
-                                sx={{
-                                  width: 50,
-                                  height: 60,
-                                  objectFit: "cover",
-                                  borderRadius: 1,
+                    {searchProducts.length > 0 ? (
+                      <List sx={{ p: 0 }}>
+                        {searchProducts.map((product) => (
+                          <Link
+                            style={{ textDecoration: "none" }}
+                            href={`/${product._id}`}
+                            key={product._id}
+                          >
+                            <ListItem disablePadding>
+                              <ListItemButton
+                                onClick={() => {
+                                  setOpen(false);
+                                  setShowSearchField(false);
+                                  setSearchTerm("");
+                                  clearSearch();
+                                  closeLayer("search");
                                 }}
-                              />
-                              <ListItemText
-                                primary={product.title}
-                                primaryTypographyProps={{
-                                  fontSize: "0.9rem",
-                                  fontWeight: 500,
-                                  color: "black",
-                                }}
-                              />
-                            </ListItemButton>
-                          </ListItem>
-                        </Link>
-                      ))}
-                    </List>
+                                sx={{ gap: 2 }}
+                              >
+                                <Box
+                                  component="img"
+                                  src={product.imgs[0]}
+                                  alt={product.title}
+                                  sx={{
+                                    width: 50,
+                                    height: 60,
+                                    objectFit: "cover",
+                                    borderRadius: 1,
+                                  }}
+                                />
+                                <ListItemText
+                                  primary={product.title}
+                                  primaryTypographyProps={{
+                                    fontSize: "0.9rem",
+                                    fontWeight: 500,
+                                    color: "black",
+                                  }}
+                                />
+                              </ListItemButton>
+                            </ListItem>
+                          </Link>
+                        ))}
+                      </List>
+                    ) : searchTerm.trim().length > 0 ? (
+                      <Box sx={{ px: 2, py: 2 }}>
+                        <Typography variant="body2" color="text.secondary">
+                          No products found.
+                        </Typography>
+                      </Box>
+                    ) : (
+                      <Box sx={{ px: 2, py: 2 }}>
+                        <Typography variant="body2" color="text.secondary">
+                          No suggestions yet.
+                        </Typography>
+                      </Box>
+                    )}
                   </SearchResults>
                 )}
               </Search>
@@ -394,7 +445,14 @@ function Navbar() {
               </Box>
             </Box>
             <Divider />
-            <MenuItem onClick={handleCloseUserMenu}>My Orders</MenuItem>
+            <MenuItem
+              onClick={() => {
+                handleCloseUserMenu();
+                router.push("/orders");
+              }}
+            >
+              My Orders
+            </MenuItem>
             <MenuItem
               onClick={() => {
                 logout();

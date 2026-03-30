@@ -161,7 +161,7 @@ const Checkout = () => {
               display: "flex",
               justifyContent: "right",
               px: { xs: 1.5, md: 4 },
-              pt: "90px",
+              pt: { xs: "72px", md: "80px" },
               mb: "10px",
             }}
           >
@@ -372,7 +372,7 @@ const Checkout = () => {
               borderLeft: { md: "1px solid #eee" },
               bgcolor: { xs: "transparent", md: "#f5f5f5" },
               px: { xs: 1.5, md: 4 },
-              pt: { xs: "15px", md: "90px" },
+              pt: { xs: "12px", md: "80px" },
               mb: "10px",
             }}
           >

@@ -15,11 +15,13 @@ export interface Product {
 
 interface ProductsState {
   allProducts: Product[];
+  searchQuery: string;
   searchProducts: Product[];
   similarProducts: Product[];
 
   getProducts: () => Promise<void>;
-  search: (query: string) => void;
+  setSearchQuery: (query: string) => void;
+  clearSearch: () => void;
   getSimilarProducts: (data: {
     style: string[];
     id: string;
@@ -29,6 +31,7 @@ interface ProductsState {
 
 export const useProductsStore = create<ProductsState>((set, get) => ({
   allProducts: [],
+  searchQuery: "",
   searchProducts: [],
 
   getProducts: async () => {
@@ -39,17 +42,32 @@ export const useProductsStore = create<ProductsState>((set, get) => ({
     });
   },
 
-  search: (query) => {
+  setSearchQuery: (query) => {
     const { allProducts } = get();
+    const normalized = (query ?? "").trim();
 
-    if (query) {
-      const filtered = allProducts.filter((product) =>
-        product.title.toLowerCase().includes(query.toLowerCase()),
-      );
-      set({ searchProducts: filtered });
-    } else {
-      set({ searchProducts: [] });
+    if (!normalized) {
+      set({
+        searchQuery: "",
+        searchProducts: allProducts.slice(0, 5),
+      });
+      return;
     }
+
+    const lowered = normalized.toLowerCase();
+    const filtered = allProducts
+      .filter((product) => product.title.toLowerCase().includes(lowered))
+      .slice(0, 5);
+
+    set({ searchQuery: normalized, searchProducts: filtered });
+  },
+
+  clearSearch: () => {
+    const { allProducts } = get();
+    set({
+      searchQuery: "",
+      searchProducts: allProducts.slice(0, 5),
+    });
   },
 
   similarProducts: [],

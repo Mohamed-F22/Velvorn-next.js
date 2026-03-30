@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import RenderProvider from "@/Context/visibility/RenderProvider";
-import Navbar from "@/Components/Navbar";
 import Cart from "@/Components/Cart";
 import AOSInit from "../Components/AOS";
 import "aos/dist/aos.css";
@@ -39,7 +38,6 @@ export default function RootLayout({
             <AuthProvider>
               <RenderModals />
               <Cart />
-              <Navbar />
               {children}
             </AuthProvider>
           </RenderProvider>

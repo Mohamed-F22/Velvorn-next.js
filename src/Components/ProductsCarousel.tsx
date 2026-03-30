@@ -11,6 +11,7 @@ const ProductsCarousel = ({ products }: { products: Product[] }) => {
       className="splide-wrapper"
       sx={{
         position: "relative",
+        boxSizing: "border-box",
         maxWidth: "1200px",
         margin: "0 auto",
         py: 0,
@@ -53,7 +54,11 @@ const ProductsCarousel = ({ products }: { products: Product[] }) => {
           <Box className="splide__arrows">
             <button
               className="splide__arrow splide__arrow--prev"
-              style={{ left: "-50px", background: "transparent !important" }}
+              style={{
+                left: "0",
+                transform: "translateX(-90%)",
+                background: "transparent",
+              }}
             >
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40">
                 <path
@@ -64,7 +69,11 @@ const ProductsCarousel = ({ products }: { products: Product[] }) => {
             </button>
             <button
               className="splide__arrow splide__arrow--next"
-              style={{ right: "-50px", background: "transparent !important" }}
+              style={{
+                right: "0",
+                transform: "translateX(90%)",
+                background: "transparent",
+              }}
             >
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40">
                 <path

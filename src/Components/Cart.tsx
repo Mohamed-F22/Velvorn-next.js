@@ -9,7 +9,7 @@ import CartItem from "./CartItem";
 import { useRouter } from "next/navigation";
 
 const Cart = () => {
-  const { overlayOff } = useRender();
+  const { closeLayer } = useRender();
   const { cartItems, totalAmount, clearCart } = useCartStore();
 
   const handleClearCart = () => {
@@ -35,13 +35,13 @@ const Cart = () => {
   const handleCloseCart = () => {
     const cart = document.getElementById("cart");
     cart?.classList.remove("active-cart");
-    overlayOff();
+    closeLayer("cart");
   };
 
   const router = useRouter();
   const handleGoToCheckout = () => {
     router.push("/checkout");
-    handleCloseCart()
+    handleCloseCart();
   };
 
   return (
@@ -60,7 +60,7 @@ const Cart = () => {
         height: "100vh",
         overflowY: "scroll",
         overflowX: "hidden",
-        zIndex: 100,
+        zIndex: 2000,
         backgroundColor: "#fff",
       }}
     >
