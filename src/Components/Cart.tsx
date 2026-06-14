@@ -21,12 +21,18 @@ const Cart = () => {
       confirmButtonColor: "#d33",
       cancelButtonColor: "#9c27b0",
       confirmButtonText: "Yes, Clear it!",
+      customClass: {
+        container: "my-custom-swal-container",
+      },
     }).then((result) => {
       if (result.isConfirmed) {
         clearCart();
         Swal.fire({
           title: "Cart has been cleared!",
           icon: "success",
+          customClass: {
+            container: "my-custom-swal-container", // ضيفها هنا كمان لو الـ Alert التاني محتاجها
+          },
         });
       }
     });

@@ -95,3 +95,6 @@ body.no-scroll {
     width: calc((100% - 3rem) / 3.25) !important;
   }
 }
+.my-custom-swal-container {
+  z-index: 99999 !important;
+}
