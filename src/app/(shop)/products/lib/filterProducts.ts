@@ -97,6 +97,10 @@ export function formatCategoryLabel(category: string) {
     .join(" ");
 }
 
+export function getUniqueCategories(products: Product[]) {
+  return [...new Set(products.map((product) => product.category.toLowerCase()))].sort();
+}
+
 export type SortOption = "price-asc" | "price-desc";
 
 export function sortProducts(products: Product[], sort?: string) {

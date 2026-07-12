@@ -54,6 +54,7 @@ const HeroSection = () => {
         </Typography>
         <Button
           variant="contained"
+          href="/products"
           sx={{
             backgroundColor: "#1a1a1a",
             color: "white",

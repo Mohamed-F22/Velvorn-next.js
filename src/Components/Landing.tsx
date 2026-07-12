@@ -131,6 +131,7 @@ const Landing = () => {
               <Box>
                 <Button
                   variant="contained"
+                  href="/products"
                   sx={{
                     backgroundColor: "#222",
                     color: "white",

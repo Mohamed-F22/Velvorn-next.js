@@ -54,6 +54,7 @@ const SportsWearCollection = () => {
             </Typography>
             <Button
               variant="contained"
+              href="/products?category=compression%2Ctank+top%2Choodie"
               sx={{
                 backgroundColor: "#222",
                 color: "white",

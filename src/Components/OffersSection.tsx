@@ -43,6 +43,7 @@ const OffersSection = ({ offerProducts }: { offerProducts: Product[] }) => {
             <Box mt={2}>
               <Button
                 variant="contained"
+                href="/products?offer=true"
                 sx={{
                   backgroundColor: "#222",
                   color: "white",

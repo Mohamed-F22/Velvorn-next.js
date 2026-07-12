@@ -46,6 +46,7 @@ const LatestDrop = ({ latestDrop }: { latestDrop: Product[] }) => {
             <Box mt={2}>
               <Button
                 variant="contained"
+                href="/products"
                 sx={{
                   backgroundColor: "#222",
                   color: "white",

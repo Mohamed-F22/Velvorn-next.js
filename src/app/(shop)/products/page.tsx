@@ -8,6 +8,7 @@ import ProductsToolbar from "./components/ProductsToolbar";
 import {
   filterProducts,
   getEffectivePrice,
+  getUniqueCategories,
   parseProductFilters,
   sortProducts,
 } from "./lib/filterProducts";
@@ -30,9 +31,7 @@ export default async function Products({ searchParams }: Props) {
   const productsData = await getProducts();
   const products = productsData.products;
 
-  const categories = [
-    ...new Set(products.map((product) => product.category.toLowerCase())),
-  ].sort();
+  const categories = getUniqueCategories(products);
 
   const maxPrice = Math.max(
     ...products.map((product) => getEffectivePrice(product)),
@@ -47,7 +46,7 @@ export default async function Products({ searchParams }: Props) {
 
   return (
     <Box sx={{ mt: "80px" }}>
-      <Container  maxWidth="xl">
+      <Container>
         <Typography variant="h3" sx={{ mb: "30px" }}>
           Our Store
         </Typography>

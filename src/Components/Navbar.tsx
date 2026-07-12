@@ -1,5 +1,6 @@
 "use client";
-import { MouseEvent, useEffect, useState } from "react";
+
+import { MouseEvent, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
   AppBar,
@@ -23,8 +24,10 @@ import {
   ListItemText,
   Paper,
   ClickAwayListener,
+  Drawer,
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
+import CloseIcon from "@mui/icons-material/Close";
 import CardGiftcardIcon from "@mui/icons-material/CardGiftcard";
 import SearchIcon from "@mui/icons-material/Search";
 import PersonIcon from "@mui/icons-material/Person";
@@ -34,6 +37,10 @@ import { useAuthStore } from "../Stores/AuthStore";
 import { useDebouncedCallback } from "use-debounce";
 import { useProductsStore } from "../Stores/ProductsStore";
 import Link from "next/link";
+import {
+  formatCategoryLabel,
+  getUniqueCategories,
+} from "@/app/(shop)/products/lib/filterProducts";
 
 const CartBadge = styled(Badge)`
   & .${badgeClasses.badge} {
@@ -93,22 +100,29 @@ const SearchResults = styled(Paper)(({ theme }) => ({
   boxShadow: theme.shadows[4],
 }));
 
+const desktopLinks = [
+  { label: "Home", href: "/" },
+  { label: "Products", href: "/products" },
+  { label: "Contact Us", href: "/contact" },
+];
+
 function Navbar() {
   const user = useAuthStore((state) => state.user);
   const logout = useAuthStore((state) => state.logout);
   const { getCartCount } = useCartStore();
-  const { openLayer, closeLayer, closeAll, isOverlayVisible } = useRender();
+  const { openLayer, closeLayer, isOverlayVisible } = useRender();
   const router = useRouter();
 
-  const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null);
+  const [navMenuOpen, setNavMenuOpen] = useState(false);
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
 
-  const handleOpenNavMenu = (event: MouseEvent<HTMLElement>) => {
-    setAnchorElNav(event.currentTarget);
+  const handleOpenNavMenu = () => {
+    setNavMenuOpen(true);
     openLayer("menu");
   };
+
   const handleCloseNavMenu = () => {
-    setAnchorElNav(null);
+    setNavMenuOpen(false);
     closeLayer("menu");
   };
 
@@ -130,11 +144,17 @@ function Navbar() {
   const [showSearchField, setShowSearchField] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
 
-  const { setSearchQuery, clearSearch, searchProducts, getProducts } =
+  const { allProducts, setSearchQuery, clearSearch, searchProducts, getProducts } =
     useProductsStore();
+
   useEffect(() => {
     getProducts();
-  }, []);
+  }, [getProducts]);
+
+  const categories = useMemo(
+    () => getUniqueCategories(allProducts),
+    [allProducts],
+  );
 
   const handleSearch = useDebouncedCallback((term: string) => {
     setSearchQuery(term);
@@ -146,7 +166,16 @@ function Navbar() {
     clearSearch();
     closeLayer("search");
   };
-  const navPages = ["Women", "Men", "Categories"];
+
+  const handleCategoryClick = (category: string) => {
+    handleCloseNavMenu();
+    router.push(`/products?category=${encodeURIComponent(category)}`);
+  };
+
+  const handleNavClick = (href: string) => {
+    handleCloseNavMenu();
+    router.push(href);
+  };
 
   useEffect(() => {
     if (!isOverlayVisible) {
@@ -154,9 +183,9 @@ function Navbar() {
       setShowSearchField(false);
       setSearchTerm("");
       clearSearch();
-      setAnchorElNav(null);
+      setNavMenuOpen(false);
     }
-  }, [isOverlayVisible]);
+  }, [clearSearch, isOverlayVisible]);
 
   return (
     <AppBar
@@ -199,18 +228,6 @@ function Navbar() {
               >
                 <MenuIcon />
               </IconButton>
-              <Menu
-                anchorEl={anchorElNav}
-                open={Boolean(anchorElNav)}
-                onClose={handleCloseNavMenu}
-                sx={{ display: { xs: "block", md: "none" } }}
-              >
-                {navPages.map((page) => (
-                  <MenuItem key={page} onClick={handleCloseNavMenu}>
-                    <Typography textAlign="center">{page}</Typography>
-                  </MenuItem>
-                ))}
-              </Menu>
             </Box>
           )}
 
@@ -237,15 +254,18 @@ function Navbar() {
 
           {/* Desktop Links */}
           <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
-            {navPages.map((page) => (
+            {desktopLinks.map((link) => (
               <Button
-                key={page}
+                key={link.href}
+                component={Link}
+                href={link.href}
                 sx={{ my: 2, color: "black", display: "block" }}
               >
-                {page}
+                {link.label}
               </Button>
             ))}
           </Box>
+
           {/* Search */}
           <ClickAwayListener
             onClickAway={() => {
@@ -384,6 +404,7 @@ function Navbar() {
               </Search>
             </Box>
           </ClickAwayListener>
+
           {/* Right Icons ( User, Cart) */}
           {!showSearchField && (
             <Box sx={{ flexGrow: 0, display: "flex", alignItems: "center" }}>
@@ -464,6 +485,81 @@ function Navbar() {
           </Menu>
         </Toolbar>
       </Container>
+
+      <Drawer
+        anchor="left"
+        open={navMenuOpen}
+        onClose={handleCloseNavMenu}
+        sx={{ display: { xs: "block", md: "none" } }}
+        PaperProps={{
+          sx: {
+            width: "min(320px, 85vw)",
+            p: 3,
+          },
+        }}
+      >
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            mb: 3,
+          }}
+        >
+          <Typography variant="h6" sx={{ fontWeight: 700, letterSpacing: 2 }}>
+            MENU
+          </Typography>
+          <IconButton onClick={handleCloseNavMenu} aria-label="Close menu">
+            <CloseIcon />
+          </IconButton>
+        </Box>
+
+        <List sx={{ p: 0 }}>
+          <ListItem disablePadding>
+            <ListItemButton onClick={() => handleNavClick("/products")}>
+              <ListItemText
+                primary="All Products"
+                primaryTypographyProps={{
+                  fontWeight: 600,
+                  letterSpacing: 0.5,
+                }}
+              />
+            </ListItemButton>
+          </ListItem>
+
+          {categories.length > 0 && (
+            <>
+              <Divider sx={{ my: 1 }} />
+              {categories.map((category) => (
+                <ListItem key={category} disablePadding>
+                  <ListItemButton onClick={() => handleCategoryClick(category)}>
+                    <ListItemText
+                      primary={formatCategoryLabel(category)}
+                      primaryTypographyProps={{
+                        fontWeight: 500,
+                        letterSpacing: 0.5,
+                      }}
+                    />
+                  </ListItemButton>
+                </ListItem>
+              ))}
+            </>
+          )}
+
+          <Divider sx={{ my: 1 }} />
+          <ListItem disablePadding>
+            <ListItemButton onClick={() => handleNavClick("/contact")}>
+              <ListItemText
+                primary="Contact Us"
+                primaryTypographyProps={{
+                  fontWeight: 600,
+                  letterSpacing: 0.5,
+                }}
+              />
+            </ListItemButton>
+          </ListItem>
+        </List>
+      </Drawer>
     </AppBar>
   );
 }
