@@ -15,36 +15,11 @@ import {
 import { useRouter } from "next/navigation";
 import Swal from "sweetalert2";
 import { v4 as uuidv4 } from "uuid";
-import { useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
-const GOVERNORATES = [
-  "Cairo",
-  "Alexandria",
-  "Giza",
-  "Dakahlia",
-  "Red Sea",
-  "Beheira",
-  "Fayoum",
-  "Gharbia",
-  "Ismailia",
-  "Monufia",
-  "Minya",
-  "Qalyubia",
-  "New Valley",
-  "Suez",
-  "Aswan",
-  "Assiut",
-  "Beni Suef",
-  "Port Said",
-  "Damietta",
-  "South Sinai",
-  "Kafr El Sheikh",
-  "Matrouh",
-  "Luxor",
-  "Qena",
-  "North Sinai",
-  "Soag",
-];
+import { EGYPT_GOVERNORATES } from "@/lib/constants";
+
+const GOVERNORATES = [...EGYPT_GOVERNORATES];
 
 interface item {
   _id: string;
@@ -71,11 +46,13 @@ const Checkout = () => {
     addressDetails: string;
     postalCode: string;
     notes: string;
+    couponCode: string;
   }
 
   const {
     control,
     handleSubmit,
+    watch,
     formState: { errors },
   } = useForm({
     defaultValues: {
@@ -87,11 +64,39 @@ const Checkout = () => {
       addressDetails: "",
       postalCode: "",
       notes: "",
+      couponCode: "",
     },
   });
 
   const idempotencyKeyRef = useRef(uuidv4());
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [shippingRates, setShippingRates] = useState<
+    Record<string, number>
+  >({});
+  const [defaultShippingPrice, setDefaultShippingPrice] = useState(15);
+  const selectedGovernorate = watch("governorate");
+
+  useEffect(() => {
+    fetch("/api/shipping")
+      .then((res) => res.json())
+      .then((data) => {
+        const map: Record<string, number> = {};
+        (data.rates || []).forEach(
+          (rate: { governorate: string; price: number }) => {
+            map[rate.governorate] = rate.price;
+          },
+        );
+        setShippingRates(map);
+        if (typeof data.defaultPrice === "number") {
+          setDefaultShippingPrice(data.defaultPrice);
+        }
+      })
+      .catch(() => {});
+  }, []);
+
+  const shippingFee = useMemo(() => {
+    return shippingRates[selectedGovernorate] ?? defaultShippingPrice;
+  }, [shippingRates, selectedGovernorate, defaultShippingPrice]);
 
   const onSubmit = async (data: OrderFormData) => {
     if (isSubmitting) return;
@@ -109,7 +114,7 @@ const Checkout = () => {
     setIsSubmitting(true);
 
     try {
-      const { notes, ...shippingAddress } = data;
+      const { notes, couponCode, ...shippingAddress } = data;
       const finalData = {
         guestItems: user
           ? []
@@ -120,6 +125,7 @@ const Checkout = () => {
             })),
         shippingAddress,
         notes,
+        couponCode: couponCode || undefined,
       };
 
       const res = await fetch("/api/checkout", {
@@ -312,6 +318,20 @@ const Checkout = () => {
 
                 <Grid size={{ xs: 12 }}>
                   <Controller
+                    name="couponCode"
+                    control={control}
+                    render={({ field }) => (
+                      <TextField
+                        {...field}
+                        label="Coupon code"
+                        fullWidth
+                      />
+                    )}
+                  />
+                </Grid>
+
+                <Grid size={{ xs: 12 }}>
+                  <Controller
                     name="notes"
                     control={control}
                     render={({ field }) => (
@@ -343,7 +363,9 @@ const Checkout = () => {
                   }}
                 >
                   <Typography>Cash On Delivery</Typography>
-                  <Typography fontWeight="bold">15.00 $</Typography>
+                  <Typography fontWeight="bold">
+                    {shippingFee.toFixed(2)} $
+                  </Typography>
                 </Paper>
               </Box>
 
@@ -473,7 +495,9 @@ const Checkout = () => {
                 }}
               >
                 <Typography color="text.secondary">Shipping</Typography>
-                <Typography fontWeight="500">15.00 $</Typography>
+                <Typography fontWeight="500">
+                  {shippingFee.toFixed(2)} $
+                </Typography>
               </Box>
               <Divider sx={{ my: 1 }} />
 
@@ -488,7 +512,7 @@ const Checkout = () => {
                   Total
                 </Typography>
                 <Typography variant="h6" fontWeight="bold">
-                  {(totalAmount + 15).toLocaleString()} $
+                  {(totalAmount + shippingFee).toLocaleString()} $
                 </Typography>
               </Box>
             </Box>

@@ -9,14 +9,19 @@ import {
   buildUserOrderItems,
   validateAddress,
 } from "@/services/server/checkoutService";
+import {
+  applyCoupon,
+  getShippingFee,
+} from "@/services/server/pricingService";
 import { AppError } from "@/Errors/AppError";
 import { RequestLog } from "@/models/RequestLog";
-
-const SHIPPING_FEES = 15;
+import { ensureAdminSeeded } from "@/lib/seedAdmin";
+import couponModel from "@/models/couponModel";
 
 export async function POST(req: Request) {
   try {
     await dbConnect();
+    await ensureAdminSeeded();
 
     const idempotencyKey = req.headers.get("x-idempotency-key");
 
@@ -36,7 +41,7 @@ export async function POST(req: Request) {
     const userId = await getUserFromToken(token);
 
     const body = await req.json();
-    const { shippingAddress, notes, guestItems } = body;
+    const { shippingAddress, notes, guestItems, couponCode } = body;
 
     if (!validateAddress(shippingAddress)) {
       throw new AppError("Invalid address data!", 400);
@@ -52,15 +57,31 @@ export async function POST(req: Request) {
       throw new AppError("Cart is empty!", 400);
     }
 
-    const finalAmount = orderData.total + SHIPPING_FEES;
+    const shippingFee = await getShippingFee(shippingAddress.governorate);
+    const { discountAmount, couponCode: appliedCode, coupon } =
+      await applyCoupon(couponCode, orderData.total);
+
+    const finalAmount = Math.max(
+      0,
+      orderData.total + shippingFee - discountAmount,
+    );
 
     const newOrder = await orderModel.create({
       orderItems: orderData.items,
       totalAmount: finalAmount,
+      shippingFee,
+      discountAmount,
+      couponCode: appliedCode,
       shippingAddress,
       userId: userId || null,
       notes,
     });
+
+    if (coupon) {
+      await couponModel.findByIdAndUpdate(coupon._id, {
+        $inc: { usedCount: 1 },
+      });
+    }
 
     if (userId) {
       await cartModel.findOneAndUpdate(
@@ -77,7 +98,7 @@ export async function POST(req: Request) {
     console.error("Order Error:", error);
     return NextResponse.json(
       { message: error.message || "Server Error" },
-      { status: 500 },
+      { status: error.statusCode || 500 },
     );
   }
 }

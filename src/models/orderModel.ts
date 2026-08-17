@@ -1,4 +1,5 @@
 import mongoose, { Schema, Document, ObjectId, models, model } from "mongoose";
+import type { OrderStatus } from "@/lib/constants";
 
 const sizeEnum = ["xs", "sm", "md", "lg", "xl"];
 
@@ -24,11 +25,15 @@ export interface IAddress {
 export interface IOrder extends Document {
   orderItems: IOrderItem[];
   totalAmount: number;
+  shippingFee: number;
+  discountAmount: number;
+  couponCode?: string | null;
   shippingAddress: IAddress;
   notes?: string;
   userId?: string | ObjectId;
-  status: "pending" | "processing" | "shipped" | "delivered" | "cancelled";
+  status: OrderStatus;
   createdAt: Date;
+  updatedAt: Date;
 }
 
 const orderItemSchema = new Schema<IOrderItem>({
@@ -54,12 +59,23 @@ const orderSchema = new Schema<IOrder>(
   {
     orderItems: [orderItemSchema],
     totalAmount: { type: Number, required: true },
+    shippingFee: { type: Number, default: 0 },
+    discountAmount: { type: Number, default: 0 },
+    couponCode: { type: String, default: null },
     shippingAddress: { type: addressSchema, required: true },
     notes: { type: String },
     userId: { type: Schema.Types.ObjectId, ref: "user", required: false },
     status: {
       type: String,
-      enum: ["pending", "processing", "shipped", "delivered", "cancelled"],
+      enum: [
+        "pending",
+        "confirmed",
+        "processing",
+        "shipped",
+        "delivered",
+        "cancelled",
+        "returned",
+      ],
       default: "pending",
     },
   },

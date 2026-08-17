@@ -1,4 +1,5 @@
-import mongoose, { model, models, Schema } from "mongoose";
+import { Document, model, models, Schema } from "mongoose";
+import type { ProductStatus } from "@/lib/constants";
 
 export interface IProduct extends Document {
   title: string;
@@ -9,6 +10,7 @@ export interface IProduct extends Document {
   offerPrice: number | null;
   stock: { xs: number; sm: number; md: number; lg: number; xl: number };
   desc: string;
+  status: ProductStatus;
 }
 
 const productSchema = new Schema<IProduct>(
@@ -27,6 +29,11 @@ const productSchema = new Schema<IProduct>(
       xl: { type: Number, default: 0 },
     },
     desc: { type: String, required: true },
+    status: {
+      type: String,
+      enum: ["available", "unavailable", "coming_soon"],
+      default: "available",
+    },
   },
   {
     timestamps: true,

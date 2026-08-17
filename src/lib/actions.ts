@@ -7,18 +7,23 @@ export interface Product {
   _id: string;
   title: string;
   category: string;
-  style: string[]
+  style: string[];
   imgs: string[];
   price: number;
   offerPrice: number | null;
   stock: { xs: number; sm: number; md: number; lg: number; xl: number };
   desc: string;
+  status?: string;
 }
 
 export async function getProducts() {
   await dbConnect();
 
-  const productsFromDB = await productModel.find({}).lean();
+  const productsFromDB = await productModel
+    .find({
+      $or: [{ status: "available" }, { status: { $exists: false } }],
+    })
+    .lean();
 
   const products: Product[] = productsFromDB.map((product: any) => ({
     ...product,
