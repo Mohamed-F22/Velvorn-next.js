@@ -2,13 +2,10 @@ import { NextResponse } from "next/server";
 import { dbConnect } from "@/lib/mongodb";
 import shippingRateModel from "@/models/shippingRateModel";
 import { DEFAULT_SHIPPING_PRICE } from "@/lib/constants";
-import { ensureAdminSeeded } from "@/lib/seedAdmin";
 
 export async function GET() {
   try {
     await dbConnect();
-    await ensureAdminSeeded();
-
     const rates = await shippingRateModel
       .find({ isActive: true })
       .select("governorate price")

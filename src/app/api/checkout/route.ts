@@ -15,14 +15,11 @@ import {
 } from "@/services/server/pricingService";
 import { AppError } from "@/Errors/AppError";
 import { RequestLog } from "@/models/RequestLog";
-import { ensureAdminSeeded } from "@/lib/seedAdmin";
 import couponModel from "@/models/couponModel";
 
 export async function POST(req: Request) {
   try {
     await dbConnect();
-    await ensureAdminSeeded();
-
     const idempotencyKey = req.headers.get("x-idempotency-key");
 
     if (idempotencyKey) {

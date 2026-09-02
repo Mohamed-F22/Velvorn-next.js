@@ -2,7 +2,10 @@ import { NextResponse } from "next/server";
 import { dbConnect } from "@/lib/mongodb";
 import productModel from "@/models/ProductModel";
 import { requireAdmin, adminErrorResponse } from "@/lib/adminAuth";
-import { AppError } from "@/Errors/AppError";
+import {
+  productCreateSchema,
+  validateAdminInput,
+} from "@/lib/validation/admin";
 
 function getEffectivePrice(product: {
   price: number;
@@ -108,33 +111,10 @@ export async function POST(req: Request) {
     await requireAdmin();
     await dbConnect();
 
-    const body = await req.json();
-    const {
-      title,
-      category,
-      style = [],
-      imgs,
-      price,
-      offerPrice = null,
-      stock,
-      desc,
-      status = "available",
-    } = body;
-
-    if (!title || !category || !imgs?.length || price == null || !desc) {
-      throw new AppError("Missing required product fields", 400);
-    }
+    const body = validateAdminInput(productCreateSchema, await req.json());
 
     const product = await productModel.create({
-      title,
-      category,
-      style,
-      imgs,
-      price,
-      offerPrice,
-      stock: stock || { xs: 0, sm: 0, md: 0, lg: 0, xl: 0 },
-      desc,
-      status,
+      ...body,
     });
 
     return NextResponse.json(

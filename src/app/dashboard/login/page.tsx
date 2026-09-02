@@ -27,7 +27,7 @@ export default function DashboardLoginPage() {
     handleSubmit,
     formState: { errors, isSubmitting },
   } = useForm<LoginInputs>({
-    defaultValues: { email: "example@gmail.com", password: "" },
+    defaultValues: { email: "", password: "" },
   });
 
   useEffect(() => {

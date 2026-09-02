@@ -19,7 +19,10 @@ export function configureCloudinary() {
   return true;
 }
 
-export async function uploadImageBuffer(buffer: Buffer, folder = "velvorn") {
+export async function uploadImageBuffer(
+  buffer: Buffer,
+  folder = "velvorn",
+) {
   const configured = configureCloudinary();
   if (!configured) {
     throw new Error(
@@ -29,7 +32,20 @@ export async function uploadImageBuffer(buffer: Buffer, folder = "velvorn") {
 
   return new Promise<string>((resolve, reject) => {
     const stream = cloudinary.uploader.upload_stream(
-      { folder },
+      {
+        folder,
+        resource_type: "image",
+        allowed_formats: ["jpg", "jpeg", "png", "webp", "avif"],
+        transformation: [
+          {
+            width: 2400,
+            height: 2400,
+            crop: "limit",
+            quality: "auto",
+            fetch_format: "auto",
+          },
+        ],
+      },
       (error, result) => {
         if (error || !result) {
           reject(error || new Error("Upload failed"));

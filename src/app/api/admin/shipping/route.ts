@@ -3,14 +3,11 @@ import { dbConnect } from "@/lib/mongodb";
 import shippingRateModel from "@/models/shippingRateModel";
 import { requireAdmin, adminErrorResponse } from "@/lib/adminAuth";
 import { AppError } from "@/Errors/AppError";
-import { ensureAdminSeeded } from "@/lib/seedAdmin";
 
 export async function GET() {
   try {
     await requireAdmin();
     await dbConnect();
-    await ensureAdminSeeded();
-
     const rates = await shippingRateModel.find({}).sort({ governorate: 1 }).lean();
     return NextResponse.json({
       rates: rates.map((r: any) => ({ ...r, _id: r._id.toString() })),

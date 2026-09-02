@@ -3,6 +3,10 @@ import { dbConnect } from "@/lib/mongodb";
 import shippingRateModel from "@/models/shippingRateModel";
 import { requireAdmin, adminErrorResponse } from "@/lib/adminAuth";
 import { AppError } from "@/Errors/AppError";
+import {
+  shippingRateUpdateSchema,
+  validateAdminInput,
+} from "@/lib/validation/admin";
 
 type Params = { params: Promise<{ id: string }> };
 
@@ -11,10 +15,13 @@ export async function PATCH(req: Request, { params }: Params) {
     await requireAdmin();
     await dbConnect();
     const { id } = await params;
-    const body = await req.json();
+    const update = validateAdminInput(
+      shippingRateUpdateSchema,
+      await req.json(),
+    );
 
     const rate = await shippingRateModel
-      .findByIdAndUpdate(id, { $set: body }, { new: true })
+      .findByIdAndUpdate(id, { $set: update }, { new: true, runValidators: true })
       .lean();
 
     if (!rate) throw new AppError("Shipping rate not found", 404);

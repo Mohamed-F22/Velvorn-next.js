@@ -1,14 +1,11 @@
 import { NextResponse } from "next/server";
 import { dbConnect } from "@/lib/mongodb";
 import { adminLogin } from "@/services/server/adminAuthService";
-import { ensureAdminSeeded } from "@/lib/seedAdmin";
 import { adminErrorResponse } from "@/lib/adminAuth";
 
 export async function POST(req: Request) {
   try {
     await dbConnect();
-    await ensureAdminSeeded();
-
     const { email, password } = await req.json();
     const { token, payload } = await adminLogin({ email, password });
 
