@@ -3,6 +3,7 @@ import { dbConnect } from "@/lib/mongodb";
 import { RequestLog } from "@/models/RequestLog";
 import { login } from "@/services/server/userService";
 import { AppError } from "@/Errors/AppError";
+import { loginSchema, validateInput } from "@/lib/validation/customer";
 
 export async function POST(req: Request) {
   try {
@@ -21,12 +22,11 @@ export async function POST(req: Request) {
       }
     }
 
-    const { email, password } = await req.json();
-    const { user, token } = await login({ email, password });
+    const body = validateInput(loginSchema, await req.json());
+    const { user, token } = await login(body);
 
     const response = NextResponse.json({
       message: "Login success",
-      token: token,
       user: {
         fullName: user.fullName,
         email: user.email,
@@ -38,6 +38,7 @@ export async function POST(req: Request) {
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
       path: "/",
+      maxAge: 60 * 60 * 24 * 7, // 7 days — matches JWT expiresIn
     });
 
     return response;

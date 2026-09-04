@@ -128,6 +128,9 @@ export const useAuthStore = create<AuthState>()(
     {
       name: "user-storage",
       storage: createJSONStorage(() => localStorage),
+      // Only persist a stable flag — user PII (name/email) is restored
+      // from the httpOnly cookie via AuthProvider on every page load.
+      partialize: () => ({}),
     },
   ),
 );

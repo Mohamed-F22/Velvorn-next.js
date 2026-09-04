@@ -7,7 +7,7 @@ import cartModel from "@/models/cartModel";
 const SECRET = process.env.SECRET_JWT as string;
 
 export function getUserFromToken(token?: string): string | null {
-  if (!token) return null;
+  if (!token || !SECRET) return null;
   try {
     const decoded = jwt.verify(token, SECRET) as { id: string };
     return decoded.id;

@@ -3,6 +3,7 @@ import { dbConnect } from "@/lib/mongodb";
 import { register } from "@/services/server/userService";
 import { RequestLog } from "@/models/RequestLog";
 import { AppError } from "@/Errors/AppError";
+import { registerSchema, validateInput } from "@/lib/validation/customer";
 
 export async function POST(req: Request) {
   try {
@@ -20,12 +21,12 @@ export async function POST(req: Request) {
       }
     }
 
-    const { fullName, email, password } = await req.json();
-    const token = await register({ fullName, email, password });
+    const body = validateInput(registerSchema, await req.json());
+    const { fullName, email } = body;
+    const token = await register(body);
 
     const response = NextResponse.json({
       message: "Welcome To Velvorn",
-      token,
       user: {
         fullName,
         email,
@@ -37,6 +38,7 @@ export async function POST(req: Request) {
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
       path: "/",
+      maxAge: 60 * 60 * 24 * 7, // 7 days — matches JWT expiresIn
     });
 
     return response;

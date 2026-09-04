@@ -13,7 +13,13 @@ export async function GET() {
   try {
     const { payload } = await jwtVerify(token, secret);
 
-    return Response.json({ user: payload });
+    return Response.json({
+      user: {
+        id: payload.id,
+        fullName: payload.fullName,
+        email: payload.email,
+      },
+    });
   } catch {
     return Response.json({ user: null });
   }
